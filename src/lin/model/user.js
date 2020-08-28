@@ -61,4 +61,12 @@ export default class User {
       old_password,
     })
   }
+
+  /**
+   * 首页获取新用户信息
+   */
+  static async getUserInfo() {
+    const info = await get('/blog/user')
+    return info
+  }
 }

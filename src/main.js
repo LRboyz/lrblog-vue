@@ -17,13 +17,16 @@ import App from '@/app.vue'
 import StickyTop from '@/component/base/sticky-top/sticky-top'
 import LIcon from '@/component/base/icon/lin-icon'
 import SourceCode from '@/component/base/source-code/source-code'
+// eslint-disable-next-line
+import VueAwesomeSwiper from 'vue-awesome-swiper'
 
 import '@/assets/style/index.scss' // eslint-disable-line
 import '@/assets/style/realize/element-variable.scss'
-import 'element-ui/lib/theme-chalk/display.css'
+import 'element-ui/lib/theme-chalk/index.css'
+import 'swiper/css/swiper.css'
 
 Vue.config.productionTip = false
-
+Vue.use(VueAwesomeSwiper /* { default options with global component } */)
 Vue.use(ElementUI)
 Vue.use(LinNotify, {
   reconnection: true,

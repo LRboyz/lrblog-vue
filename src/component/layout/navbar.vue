@@ -1,32 +1,28 @@
 <template>
   <div class="nav-wrapper">
-    <ul class="nav-list">
-      <li
-        v-for="(cat, index) in categoryList"
-        :key="cat.id"
-        :class="{ active: category_name == cat.category_name }"
-        @click="handleChange(index, cat.category_name)"
-      >
-        <el-avatar shape="square" size="small" :src="cat.thumbnail" style="margin: 0px 15px 0 20px;"></el-avatar>
-        <!-- :href="`/category/${cat.category_name}`" -->
-        {{ cat.category_name }}
-      </li>
-    </ul>
+    <el-row class="row-bg" :gutter="20">
+      <el-col :xs="24" :md="17" :lg="24">
+        <ul class="nav-list ml-10" v-for="(cat, index) in categoryList" :key="cat.id">
+          <li :class="{ active: category_name == cat.category_name }" @click="handleChange(index, cat.category_name)">
+            <el-avatar shape="square" size="small" :src="cat.thumbnail" style="margin: 0px 15px 0 20px;"></el-avatar>
+            {{ cat.category_name }}
+          </li>
+        </ul>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Navbar',
-  props: {
-    categoryList: {
-      type: Array,
-    },
-  },
   computed: {
     category_name() {
       return this.$route.params.category_name
     },
+    ...mapGetters(['categoryList']),
   },
   data() {
     return {
@@ -35,14 +31,9 @@ export default {
       isActive: -1,
     }
   },
-  created() {
-    // this.getCategory()
-  },
+  created() {},
   methods: {
     handleChange(index, catName) {
-      // console.log(this.category_name)
-      // console.log(this.$route)
-      // this.isActive = index
       this.$router.push({
         path: `/index/${catName}`,
       })
@@ -54,10 +45,9 @@ export default {
 <style scoped lang="scss">
 .nav-wrapper {
   .nav-list {
-    width: 130px;
-    position: fixed;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
     .active {
       transition: 0.5s;
       color: #3963bc;
@@ -65,14 +55,17 @@ export default {
       background-color: #ffffff;
     }
     li {
+      width: 100px;
       cursor: pointer;
       display: flex;
+      flex-wrap: nowrap;
       justify-content: flex-start;
       align-items: center;
       height: 40px;
+      font-weight: bold;
       border-radius: 8px;
       font-family: $font-family-base;
-      font-size: 14px;
+      font-size: 12px;
       line-height: 40px;
       margin: 4px 0 8px;
       padding: 0 16px 0 0px;
@@ -81,12 +74,9 @@ export default {
       background: #ffffff;
       color: $parent-title-color;
       transition: 0.3s ease-in-out;
-      transform: scale(1.1);
+      // transform: scale(1.1);
       font-weight: bold;
     }
-  }
-  /deep/ .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 150px;
   }
 }
 </style>

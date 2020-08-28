@@ -32,8 +32,20 @@ $font-family-sans-serif: SpecialSymbol, DINRegular, -apple-system, BlinkMacSyste
 $font-family-monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;
 $font-family-base: $font-family-sans-serif;
 
+.flex {
+  display: flex;
+}
+.theme {
+  color: $theme;
+}
 .ml-10 {
   margin-left: 10px;
+}
+.mt-10 {
+  margin-top: 10px;
+}
+.mt-20 {
+  margin-top: 20px;
 }
 .ml-20 {
   margin-left: 20px;
@@ -54,7 +66,7 @@ $font-sizes: (
   l: 24px,
   //20px
     xl: 28px,
-  //28px,,,,,
+  //28px,,,,,,,,,
 );
 
 @each $sizeKey, $size in $font-sizes {

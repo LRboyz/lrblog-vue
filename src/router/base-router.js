@@ -4,8 +4,32 @@ let baseRouter = [
     path: '/index/:category_name?/:tag_name?',
     name: 'index',
     component: () => import('@/view/home/index.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('@/view/article/articleListItem.vue'),
+      },
+      {
+        path: '/article/:id?',
+        component: () => import('@/view/article/articleDetail.vue'),
+      },
+      // {
+      //   path: '/index/test',
+      //   component: () => import('@/view/home/test.vue'),
+      // },
+      // {
+      //   path: '/index/test2',
+      //   component: () => import('@/view/home/test2.vue'),
+      // },
+    ],
     meta: { title: '首页' },
   },
+  // {
+  //   path: '/article/:id',
+  //   name: 'articleDetail',
+  //   component: () => import('@/view/article/articleDetail.vue'),
+  //   meta: { title: '文章详情页' },
+  // },
   // {
   //   path: '/index/:category_name?',
   //   name: 'categoryList',

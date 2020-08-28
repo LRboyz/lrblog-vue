@@ -7,7 +7,9 @@
       </div>
       <div class="hot-title" v-for="(tit, index) in hotArticleList" :key="tit.id">
         <i class="number">{{ index + 1 }}</i>
-        <span class="title">{{ tit.title | filterTitle(24) }}</span>
+        <router-link :to="`/article/${tit.id}`">
+          <span class="title">{{ tit.title | filterTitle(24) }}</span>
+        </router-link>
       </div>
     </el-card>
   </div>

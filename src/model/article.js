@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { post, get, put, _delete } from '@/lin/plugin/axios'
 
-// 我们通过 class 这样的语法糖使模型这个概念更加具象化，其优点：耦合性低、可维护性。
 class ArticleApi {
   // constructor() {}
   async getArticleList(params) {
@@ -10,6 +9,15 @@ class ArticleApi {
   }
   async gethotArticleList(params) {
     const res = await get('blog/hot/list', params)
+    return res
+  }
+  async getArticleDetail(id) {
+    // id 是 article_id
+    const res = await get(`article/detail/${id}`)
+    return res
+  }
+  async getArticleArchive() {
+    const res = await get('article/archive')
     return res
   }
   async getTagList(params) {

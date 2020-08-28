@@ -1,58 +1,66 @@
 <template>
-  <div class="wrapper">
-    <div class="nav"><Navbar :categoryList="categoryList" /></div>
-    <div class="main-content">
-      <transition name="fade">
-        <div class="article-item" v-if="articleList.length > 0">
-          <ArticleListItem
-            v-for="articleItem in articleList"
-            :key="articleItem.id + articleItem.title"
-            :articleItem="articleItem"
-            :loading="loading"
-            :isCanLoadMore="isCanLoadMore"
-          ></ArticleListItem>
+  <div>
+    <el-row class="row-bg" :gutter="24">
+      <el-col :xs="24" :md="3">
+        <div class="nav"><Navbar :categoryList="categoryList" /></div>
+      </el-col>
+      <el-col :xs="21" :md="14">
+        <div class="main-content">
+          <transition name="fade">
+            <router-view></router-view>
+          </transition>
+          <!-- <Loading v-else /> -->
+          <!--  加载更多 -->
+          <div v-show="$route.path === '/index'">
+            <el-button
+              class="handan-btn hover-target"
+              :disabled="loading || !isCanLoadMore"
+              @click="loadmoreArticle"
+              :loading="loading"
+            >
+              <span v-if="isCanLoadMore">加载更多</span>
+              <span v-else>我也是有底线的～</span>
+            </el-button>
+          </div>
         </div>
-      </transition>
-      <!-- <Loading v-else /> -->
-      <!--  加载更多 -->
-      <el-button
-        class="handan-btn hover-target"
-        :disabled="loading || !isCanLoadMore"
-        @click="loadmoreArticle"
-        :loading="loading"
-      >
-        <span v-if="isCanLoadMore">加载更多</span>
-        <span v-else>我也是有底线的～</span>
-      </el-button>
-    </div>
-    <!-- 右侧侧边栏 -->
-    <div class="aside">
-      <hot-article-list :hotArticleList="hotArticleList" />
-      <tag-list :tagList="tagList" />
-    </div>
+      </el-col>
+      <el-backtop class="lin-back-top"></el-backtop>
+      <!-- 右侧侧边栏 -->
+      <el-col :xs="21" :md="7">
+        <div class="aside">
+          <user-card />
+          <hot-article-list :hotArticleList="hotArticleList" class="mt-20" />
+          <tag-list :tagList="tagList" />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import { mapMutations } from 'vuex'
+// import Swiper from '@/view/article/swiper'
 import Navbar from '@/component/layout/navbar'
 import Loading from '@/component/loading'
 import ArticleApi from '@/model/article'
 import CategoryApi from '@/model/category'
-import ArticleListItem from '@/view/article/articleListItem'
 import HotArticleList from '@/view/article/hotArticleList'
 import TagList from '@/view/tag/tagList'
+import UserCard from '@/view/user/index'
 
 export default {
   components: {
+    // Swiper,
     Navbar,
-    ArticleListItem,
     Loading,
     HotArticleList,
     TagList,
+    UserCard,
   },
   data() {
     return {
+      // drawer: false,
       pagination: {
         currentPage: 0,
         pageSize: 10,
@@ -68,14 +76,14 @@ export default {
       tagList: [],
     }
   },
-  watch: {
-    $route(v) {
-      // console.log(v);
-      this.articleList = []
-      this.isCanLoadMore = true
-      this.refresh()
-    },
-  },
+  // watch: {
+  //   $route(v) {
+  //     // console.log(v);
+  //     this.articleList = []
+  //     this.isCanLoadMore = true
+  //     this.refresh()
+  //   },
+  // },
   computed: {
     category_name() {
       return this.$route.params.category_name
@@ -83,6 +91,7 @@ export default {
   },
   created() {
     this.refresh()
+    // console.log(this.$route.path)
   },
   methods: {
     async refresh() {
@@ -97,12 +106,13 @@ export default {
         count: 20,
         page: 0,
       })
-      this.categoryList = res.categorys
+      this.categoryList = res.data
+      this.get_category_list(this.categoryList)
     },
     // 获取热门文章列表
     async gethotArticleList() {
       const hot_list = await ArticleApi.gethotArticleList()
-      this.hotArticleList = hot_list.hots
+      this.hotArticleList = hot_list.data
       // console.log(this.hot_list)
     },
     // 获取Tag标签列表
@@ -111,8 +121,8 @@ export default {
         page: 15,
         page: 0,
       })
-      this.tagList = tag_list.tags
-      console.log(this.tagList)
+      this.tagList = tag_list.data
+      // console.log(this.tagList)
     },
     // 获取文章列表
     async getArticleList(params) {
@@ -126,8 +136,9 @@ export default {
       })
       this.loading = false
       if (isLoadMore) {
-        console.log('加载更多...')
-        this.articleList = this.articleList.concat([...res.article])
+        // console.log('加载更多...')
+        this.articleList = this.articleList.concat([...res.data])
+        this.get_article_list(this.articleList)
         this.pagination.pageTotal = res.current_total
 
         // console.log(this.articleList.length, this.pagination.pageTotal)
@@ -136,8 +147,9 @@ export default {
         }
         // console.log(this.articleList)
       } else {
-        console.log('不是加载更多了')
-        this.articleList = res.article
+        // console.log('不是加载更多了')
+        this.articleList = res.data
+        this.get_article_list(this.articleList)
       }
     },
     // 初始化数据
@@ -151,24 +163,19 @@ export default {
     loadmoreArticle() {
       this.pagination.currentPage += 1
       this.getArticleList(this.pagination)
-
-      // Vue.nextTick(() => {
-      //   scrollTo(window.scrollY + window.innerHeight * 0.8, 300, {
-      //     easing: Easing['ease-in'],
-      //   })
-      // })
-      // console.log(this.articleList)
     },
+    ...mapMutations({
+      get_category_list: 'GET_CATEGORY_LIST',
+      get_article_list: 'SET_ARTICLE_LIST',
+    }),
   },
 }
 </script>
 
 <style scoped lang="scss">
 .wrapper {
-  // min-width: 1150px;
-  // margin: 0 auto;
-  display: flex;
-  flex-direction: row;
+  // display: flex;
+  // flex-direction: row;
   > .nav {
     width: 130px;
     margin-right: 20px;
@@ -180,7 +187,8 @@ export default {
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
   }
-  > .main-content {
+  .main-content {
+    margin-bottom: 20px;
     flex: 1;
     .handan-btn {
       border: 2px solid rgba(255, 255, 255, 0.3);
@@ -308,7 +316,12 @@ export default {
   }
   > .aside {
     margin-left: 20px;
-    width: 270px;
+    // width: 220px;
+  }
+  @media (max-width: 980px) {
+    .nav {
+      display: none;
+    }
   }
 }
 </style>

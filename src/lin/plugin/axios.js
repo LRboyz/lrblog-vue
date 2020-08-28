@@ -1,3 +1,4 @@
+/* eslint-disable */
 // ajax 封装插件, 使用 axios
 import Vue from 'vue'
 import axios from 'axios'
@@ -7,7 +8,7 @@ import store from '@/store'
 import { getToken, saveAccessToken } from '@/lin/util/token'
 
 const config = {
-  baseURL: Config.baseURL || process.env.VUE_APP_BASE_URL || '',
+  baseURL: Config.baseURL || process.env.apiUrl || '',
   timeout: 5 * 1000, // 请求超时时间设置
   crossDomain: true,
   // withCredentials: true, // Check cross-site Access-Control
@@ -16,19 +17,6 @@ const config = {
   validateStatus(status) {
     return status >= 200 && status < 510
   },
-}
-
-/**
- * 错误码是否是refresh相关
- * @param {number} code 错误码
- */
-function refreshTokenException(code) {
-  let flag = false
-  const codes = [10000, 10042, 10050, 10052]
-  if (codes.includes(code)) {
-    flag = true
-  }
-  return flag
 }
 
 // const retryTime = 2 // 请求失败重试次数
@@ -42,7 +30,9 @@ _axios.interceptors.request.use(
     // 有 API 请求重新计时
     Vue.prototype.$_lin_jump()
 
-    const reqConfig = { ...originConfig }
+    const reqConfig = {
+      ...originConfig,
+    }
 
     // step1: 容错处理
     if (!reqConfig.url) {
@@ -98,7 +88,7 @@ _axios.interceptors.request.use(
       console.warn(`其他请求类型: ${reqConfig.method}, 暂无自动处理`)
     }
     // step2: permission 处理
-    if (reqConfig.url === 'cms/user/refresh') {
+    if (reqConfig.url === 'user/refresh') {
       const refreshToken = getToken('refresh_token')
       if (refreshToken) {
         // eslint-disable-next-line no-param-reassign
@@ -122,28 +112,32 @@ _axios.interceptors.request.use(
 // Add a response interceptor
 _axios.interceptors.response.use(
   async res => {
-    let { code, message } = res.data // eslint-disable-line
+    let { error_code, msg } = res.data // eslint-disable-line
     if (res.status.toString().charAt(0) === '2') {
       return res.data
     }
     return new Promise(async (resolve, reject) => {
       const { url } = res.config
 
-      // refreshToken相关，直接登出
-      if (refreshTokenException(code)) {
+      // refresh_token 异常，直接登出
+      if (error_code === 10000 || error_code === 10100) {
+        Vue.prototype.$message({
+          message: msg,
+          type: 'error',
+        })
         setTimeout(() => {
           store.dispatch('loginOut')
           const { origin } = window.location
           window.location.href = origin
-        }, 1500)
+        }, 2500)
         return resolve(null)
       }
-      // assessToken相关，刷新令牌
-      if (code === 10041 || code === 10051) {
+      // 令牌相关，刷新令牌
+      if (error_code === 10040 || error_code === 10041 || error_code === 10050 || error_code === 10051) {
         const cache = {}
         if (cache.url !== url) {
           cache.url = url
-          const refreshResult = await _axios('cms/user/refresh')
+          const refreshResult = await _axios('user/refresh')
           saveAccessToken(refreshResult.access_token)
           // 将上次失败请求重发
           const result = await _axios(res.config)
@@ -160,14 +154,14 @@ _axios.interceptors.response.use(
         const errorArr = Object.entries(ErrorCode).filter(v => v[0] === code.toString())
         // 匹配到前端自定义的错误码
         if (errorArr.length > 0 && errorArr[0][1] !== '') {
-          message = errorArr[0][1] // eslint-disable-line
+          msg = errorArr[0][1] // eslint-disable-line
         } else {
-          message = ErrorCode['777']
+          msg = ErrorCode['777']
         }
       }
 
       Vue.prototype.$message({
-        message,
+        message: msg,
         type: 'error',
       })
       reject()

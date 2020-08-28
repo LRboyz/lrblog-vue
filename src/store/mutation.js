@@ -47,4 +47,13 @@ export default {
   [types.SET_REFERSH_OPTION](state, option) {
     state.refreshOptions = option
   },
+
+  // 分类列表存入Vuex，方便拿取数据
+  [types.GET_CATEGORY_LIST](state, list) {
+    state.categoryList = list
+  },
+  // 将文章列表存入vuex
+  [types.SET_ARTICLE_LIST](state, list) {
+    state.articleList = list
+  },
 }

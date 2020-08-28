@@ -3,7 +3,6 @@
     <figure class="widget">
       <background />
     </figure>
-
     <router-view />
   </div>
 </template>
@@ -44,7 +43,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-
+  overflow-x: hidden;
+  // background: #f4f3f4;
+  // overflow-x: hidden;
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,

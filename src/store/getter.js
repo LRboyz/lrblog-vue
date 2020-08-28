@@ -21,6 +21,10 @@ const deepTravel = (obj, fuc) => {
 
 export const logined = state => state.logined
 
+export const categoryList = state => state.categoryList
+
+export const articleList = state => state.articleList
+
 export const user = state => state.user
 
 export const readedMessages = state => state.readedMessages

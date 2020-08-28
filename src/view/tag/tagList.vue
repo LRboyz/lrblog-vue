@@ -9,7 +9,7 @@
         <el-tag v-for="tag in tagList" v-bind:key="tag.id" :hit="false" effect="light" type="info">
           <router-link :to="{ path: '/tag/' + `${tag.id}` }" target="_blank">
             <div alt="黑客派" class="tag-image" :style="`background-image: url('${tag.thumbnail}');`"></div>
-            {{ tag.tag_name }}
+            {{ tag.tag_name }} ({{ tag.article_count }})
           </router-link>
         </el-tag>
       </div>
