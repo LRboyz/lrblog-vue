@@ -1,116 +1,86 @@
 <template>
   <div class="detail-wrapper">
-    <!-- <el-row :gutter="24"> -->
-    <!-- <el-row :gutter="24"> -->
-    <!-- <el-col :xl="18" :lg="18" :md="24" :sm="24" :xs="24"> -->
-    <el-card class="box-card">
-      <div class="detail-head">
-        <h1 class="title fs-l fw-bold">{{ detail.title }}</h1>
-        <div class="info mt-20">
-          <el-tag size="small">原创</el-tag>
-          <el-breadcrumb separator="/" class="ml-20">
-            <el-breadcrumb-item>Admin</el-breadcrumb-item>
-            <el-breadcrumb-item>
-              <i class="el-icon-time fs-xs"></i>
-              <span class="ml-5 fs-xs">{{ detail.pub_time }}</span>
-            </el-breadcrumb-item>
-            <el-breadcrumb-item>
-              <i class="el-icon-chat-line-round"></i>
-              <span class="ml-5">{{ detail.commentsCount }}</span>
-            </el-breadcrumb-item>
-            <el-breadcrumb-item>
-              <i class="el-icon-view"></i>
-              <span class="ml-5">{{ detail.views }}</span>
-            </el-breadcrumb-item>
-          </el-breadcrumb>
-        </div>
-      </div>
-
-      <el-divider />
-
-      <div class="detail-body">
-        <mavonEditor
-          ref="md"
-          :subfield="false"
-          v-model="detail.content"
-          :defaultOpen="'preview'"
-          :toolbarsFlag="false"
-          :ishljs="true"
-          codeStyle="atom-one-dark"
-        />
-        <el-tabs value="first">
-          <el-tab-pane label="作者" name="first">
-            <div class="meta-list">
-              <div class="user-info">
-                <el-avatar :size="50" :src="user.avatar"></el-avatar>
-                <div class="ml-20 fw-bold">
-                  <p class="fw-bold">{{ user.nickname }}</p>
-                  <p class="fs-xs mt-20">如有疑问或者希望一起交流学习，请按如下方式联系我:</p>
-                  <div class="flex">
-                    <el-tooltip class="item" effect="dark" content="13549128759" placement="bottom">
-                      <div class="icon"><i class="iconfont icon-wechat" style="color: green;"></i></div>
-                    </el-tooltip>
-                    <div class="icon ml-20"><i class="iconfont icon-github"></i></div>
-                    <el-tooltip class="item" effect="dark" content="603552916" placement="bottom">
-                      <div class="icon ml-20"><i class="iconfont icon-qq" style="color: #3398dc;"></i></div>
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="No Allow !" placement="bottom">
-                      <div class="icon ml-20"><i class="iconfont icon-weibo" style="color: #ff0000;"></i></div>
-                    </el-tooltip>
-                  </div>
-                </div>
+    <i class="des">原创</i>
+    <div class="box-card">
+      <el-row :gutter="24">
+        <el-col :xl="24" :lg="24" :md="13" :sm="24" :xs="24">
+          <el-card v-if="detail.title">
+            <div class="detail-head">
+              <h1 class="title ml-20 fw-bold">{{ detail.title }}</h1>
+              <div class="info mt-20">
+                <el-breadcrumb separator="/" class="ml-20" style="line-height: 20px;">
+                  <el-breadcrumb-item>
+                    <i class="el-icon-time fs-xs"></i>
+                    <span class="ml-5 fs-xs">{{ detail.pub_time }}</span>
+                  </el-breadcrumb-item>
+                  <el-breadcrumb-item>
+                    <i class="el-icon-chat-line-round"></i>
+                    <span class="ml-5">评论: {{ detail.commentsCount }}</span>
+                  </el-breadcrumb-item>
+                  <el-breadcrumb-item>
+                    <i class="el-icon-view"></i>
+                    <span class="ml-5">阅读: {{ detail.views }}</span>
+                  </el-breadcrumb-item>
+                </el-breadcrumb>
               </div>
             </div>
-          </el-tab-pane>
-          <el-tab-pane label="评论区" name="two">
-            评论区留言
-          </el-tab-pane>
-          <!-- <div class="tag-category mt-20">
-            <span class="fw-bold theme">标签:</span>
-            <div v-for="tag in detail.tags" :key="tag">
-              <el-button size="small" round class="ml-20">{{ tag }}</el-button>
-            </div>
-          </div>
-          <div class="tag-category mt-20">
-            <span class="fw-bold theme">分类:</span>
-            <el-button size="small" round class="ml-20">{{ detail.category }}</el-button>
-          </div> -->
-        </el-tabs>
-      </div>
-    </el-card>
-    <!-- </el-col> -->
-    <!-- <el-col :xl="6" :lg="6" :md="24" :sm="24" :xs="24" class="sidebar">
-        <div>
-          <el-card shadow="never">
-            <div slot="header" style="text-align: left;">
-              <span class="fw-bold fs-sm">
-                <i class="iconfont icon-like fs-sm" style="color: red;"></i>
-                猜你喜欢</span
-              >
-            </div>
-            <div>
-              <ul v-for="item in archive" :key="item + item.title" class="list">
-                <li>
-                  <router-link :to="`/article/${item._id}`" target="_blank"
-                    >{{ item.title | filterTitle(30) }}
-                  </router-link>
-                  <p class="fs-xs">
-                    <span> {{ item.pub_time }} </span>
-                    <span class="ml-20"> 浏览:{{ item.views }} </span>
-                  </p>
-                </li>
-              </ul>
+
+            <el-divider />
+
+            <div class="detail-body">
+              <mavonEditor
+                ref="md"
+                :subfield="false"
+                v-model="detail.content"
+                :defaultOpen="'preview'"
+                :toolbarsFlag="false"
+                :ishljs="true"
+                codeStyle="atom-one-dark"
+              />
+              <el-tabs value="two">
+                <el-tab-pane label="作者" name="first">
+                  <div class="meta-list">
+                    <div class="user-info">
+                      <el-avatar :size="50" :src="userinfo.avatar"></el-avatar>
+                      <div class="ml-20 fw-bold">
+                        <p class="fw-bold">{{ userinfo.nickname }}</p>
+                        <p class="fs-xs mt-20">如有疑问或者希望一起交流学习，请按如下方式联系我:</p>
+                        <div class="flex">
+                          <el-tooltip class="item" effect="dark" content="13549128759" placement="bottom">
+                            <div class="icon"><i class="iconfont icon-wechat" style="color: green;"></i></div>
+                          </el-tooltip>
+                          <div class="icon ml-20"><i class="iconfont icon-github"></i></div>
+                          <el-tooltip class="item" effect="dark" content="603552916" placement="bottom">
+                            <div class="icon ml-20"><i class="iconfont icon-qq" style="color: #3398dc;"></i></div>
+                          </el-tooltip>
+                          <el-tooltip class="item" effect="dark" content="No Allow !" placement="bottom">
+                            <div class="icon ml-20"><i class="iconfont icon-weibo" style="color: #ff0000;"></i></div>
+                          </el-tooltip>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </el-tab-pane>
+                <el-tab-pane label="评论区" name="two">
+                  <!-- 评论区 -->
+                  <comment-list
+                    :post_id="post_id"
+                    :comment_user_id="user.id"
+                    @success="getCommentSuccess"
+                    @updateComment="updateComment"
+                  ></comment-list>
+                </el-tab-pane>
+              </el-tabs>
             </div>
           </el-card>
-          <div class="mt-20">
-            <span class="fw-bold ml-20">分类专栏</span>
-            <el-tree :data="category" @node-click="handleNodeClick" class="mt-20"></el-tree>
-          </div>
-        </div>
-      </el-col> -->
+          <skeleton-paragraph v-else class="content" :lines="20" line-height="1.2em" />
+        </el-col>
+      </el-row>
+      <!-- <transition name="module" mode="out-in"> -->
 
-    <!-- <el-col :xs="21" :md="7"> -->
-    <!-- </el-row> -->
+      <!-- </transition> -->
+    </div>
+    <!-- <Loading v-else /> -->
     <el-backtop class="lin-back-top"></el-backtop>
   </div>
 </template>
@@ -118,46 +88,56 @@
 <script>
 import { mapGetters } from 'vuex'
 import { mavonEditor } from 'mavon-editor'
+import CommentList from '@/view/comment/comment-list'
 import ArticleApi from '@/model/article'
 
+// import Loading from '@/component/loading'
 export default {
   name: 'articleDetail',
   components: {
     mavonEditor,
+    // Loading,
+    CommentList,
   },
-
+  watch: {
+    $route() {
+      this.detail = {}
+      this.getDetail()
+    },
+  },
   created() {
     this.getDetail()
   },
   computed: {
     ...mapGetters(['user']),
+    post_id() {
+      return this.$route.params.id
+    },
   },
   data() {
     return {
       detail: {},
-      archive: [],
       category: [],
+      userinfo: {},
     }
   },
 
   methods: {
-    handleNodeClick(data) {
-      console.log(data)
+    getCommentSuccess(total) {
+      console.log(total)
+      // this.model.comment_quantity = total
     },
+    updateComment() {
+      console.log('update Comment !')
+    },
+    // likeChange({ likes_quantity, is_liked }) {
+    //   this.model.likes_quantity += likes_quantity
+    //   this.model.is_liked = is_liked
+    // },
     async getDetail() {
       const res = await ArticleApi.getArticleDetail(this.$route.params.id)
-      // console.log(res)
-      const sidebar = await ArticleApi.getArticleArchive()
-      // eslint-disable-next-line
-      this.detail = res.data[0]
-      this.archive = sidebar.archive
-      for (const cat in sidebar.cat_number) {
-        this.category.push({
-          label: `${cat} (${sidebar.cat_number[cat]})`,
-        })
-        // console.log(cat, sidebar.cat_number[cat])
-      }
-      // console.log(this.archive)
+      this.detail = res.data
+      this.userinfo = res.data.author_info
     },
   },
 }
@@ -165,32 +145,39 @@ export default {
 
 <style lang="scss" scoped>
 .detail-wrapper {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
-  // flex-direction: column;
-  // max-width: 1200px;
-  // width: 100%;
-  // flex-direction: row;
   margin: 0 auto;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 200px);
+  .des {
+    background: cornflowerblue;
+    color: white;
+    font-style: normal;
+    font-size: 14px;
+    position: absolute;
+    padding: 4px 10px 10px 4px;
+    border-radius: 0 0 30px 0;
+    left: 0;
+    top: 0;
+  }
   .box-card {
-    // max-width: 700px;
-    // min-width: 800px;
-    background-image: linear-gradient(90deg, rgba(50, 0, 0, 0.05) 3%, rgba(0, 0, 0, 0) 3%),
-      linear-gradient(360deg, rgba(50, 0, 0, 0.05) 3%, rgba(0, 0, 0, 0) 3%);
     background-size: 20px 20px;
     background-position: center center;
+    /deep/ .el-card__body {
+      padding: 0px;
+    }
     .detail-head {
+      margin-top: 40px;
       text-align: left;
       .info {
-        display: flex;
-        align-items: center;
         .ml-5 {
           margin-left: 5px;
         }
       }
     }
     .detail-body {
+      margin: 10px;
       // margin-bottom: 20px;
       .meta-list {
         text-align: left;
@@ -215,11 +202,12 @@ export default {
           }
         }
       }
-      // > .tag-category {
-      //   text-align: left;
-      //   display: flex;
-      //   align-items: center;
-      // }
+      /deep/ .el-tabs {
+        padding: 20px;
+      }
+    }
+    .content {
+      margin-top: 40px;
     }
   }
   .sidebar {
@@ -238,8 +226,14 @@ export default {
   }
 
   @media (max-width: 600px) {
+    * {
+      font-size: 12px;
+    }
     .detail-wrapper {
       flex-direction: column;
+    }
+    .box-card {
+      min-width: 100%;
     }
     .box-card .el-card__body {
       margin: 10px;
@@ -254,6 +248,11 @@ export default {
     .el-col-xs-24 {
       padding-left: 0px !important;
       padding-right: 0px !important;
+    }
+  }
+  @media (min-width: 1200px) {
+    .box-card {
+      min-width: 660px;
     }
   }
 }

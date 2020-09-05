@@ -7,27 +7,22 @@
     <div class="headerWrapper">
       <el-header style="padding: 0; background: rgba(255, 255, 255, 0.6);" class="main-header">
         <div class="header-container">
-          <el-menu mode="horizontal" @select="handleSelect">
+          <el-menu mode="horizontal" @select="handleSelect" default-active="index">
             <el-menu-item>
               <i @click="drawer = true" class="switch el-icon-s-unfold"></i>
             </el-menu-item>
             <el-menu-item>
-              <router-link :to="{ path: '/index' }">
-                <h2 class="logo-title ml-20"><span>LR</span>Blog</h2>
+              <router-link :to="{ path: '/' }">
+                <h2 class="logo-title"><span>LR</span>Blog</h2>
               </router-link>
             </el-menu-item>
 
-            <el-menu-item index="/index" class="block">
-              <router-link :to="{ path: '/index' }">
+            <!-- <el-menu-item index="index" class="block">
+              <router-link :to="{ path: '/' }">
                 首页
               </router-link>
-            </el-menu-item>
-            <!-- <el-menu-item v-if="logined" index="/subscribe" class="block">
-              <router-link :to="{ path: '/subscribe' }"> <i class="el-icon-c-scale-to-original"></i>关注 </router-link>
-            </el-menu-item>
-            <el-menu-item v-if="logined" index="/notification/userComment" class="block">
-              <router-link :to="{ path: '/notification/userComment' }"> <i class="el-icon-bell"></i>消息 </router-link>
             </el-menu-item> -->
+
             <template>
               <el-menu-item index="login" v-show="!logined" style="float: right;">
                 <el-link>登录</el-link>
@@ -134,10 +129,11 @@ export default {
 }
 .wrapper {
   // width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   .headerWrapper {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba($color: #ffffff, $alpha: 0.8);
     position: fixed;
     width: 100%;
     left: 0;
@@ -179,6 +175,7 @@ export default {
   .mainWrapper {
     // height: calc(100% - 80px);
     // min-height: 100%;
+    width: 100%;
     margin-top: 80px;
     padding-left: 0px;
     // min-width: 1050px;

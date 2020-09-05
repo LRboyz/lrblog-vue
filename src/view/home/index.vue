@@ -4,7 +4,7 @@
       <el-col :xs="24" :md="3">
         <div class="nav"><Navbar :categoryList="categoryList" /></div>
       </el-col>
-      <el-col :xs="21" :md="14">
+      <el-col :xs="22" :md="14">
         <div class="main-content">
           <transition name="fade">
             <router-view></router-view>
@@ -26,11 +26,13 @@
       </el-col>
       <el-backtop class="lin-back-top"></el-backtop>
       <!-- 右侧侧边栏 -->
-      <el-col :xs="21" :md="7">
+      <el-col :xs="22" :md="7">
         <div class="aside">
           <user-card />
-          <hot-article-list :hotArticleList="hotArticleList" class="mt-20" />
-          <tag-list :tagList="tagList" />
+          <div class="is_fixed">
+            <hot-article-list :hotArticleList="hotArticleList" class="mt-20" />
+            <tag-list :tagList="tagList" />
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -39,10 +41,11 @@
 
 <script>
 /* eslint-disable */
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import { mapMutations } from 'vuex'
-// import Swiper from '@/view/article/swiper'
 import Navbar from '@/component/layout/navbar'
-import Loading from '@/component/loading'
+
 import ArticleApi from '@/model/article'
 import CategoryApi from '@/model/category'
 import HotArticleList from '@/view/article/hotArticleList'
@@ -51,9 +54,7 @@ import UserCard from '@/view/user/index'
 
 export default {
   components: {
-    // Swiper,
     Navbar,
-    Loading,
     HotArticleList,
     TagList,
     UserCard,
@@ -68,6 +69,8 @@ export default {
         category_name: null,
         tag_name: null,
       },
+      aside: 0,
+      scroll: 0,
       loading: false,
       isCanLoadMore: true,
       categoryList: [],
@@ -76,14 +79,19 @@ export default {
       tagList: [],
     }
   },
-  // watch: {
-  //   $route(v) {
-  //     // console.log(v);
-  //     this.articleList = []
-  //     this.isCanLoadMore = true
-  //     this.refresh()
-  //   },
-  // },
+  watch: {
+    $route(v) {
+      // console.log(v);
+      this.articleList = []
+      this.isCanLoadMore = true
+      this.refresh()
+    },
+  },
+  mounted() {
+    this.$nextTick(function() {
+      window.addEventListener('scroll', this.dataScroll, true)
+    })
+  },
   computed: {
     category_name() {
       return this.$route.params.category_name
@@ -154,10 +162,28 @@ export default {
     },
     // 初始化数据
     async initData() {
+      console.log(this.$route)
       await this.getCategory()
-      await this.getArticleList(this.pagination)
-      await this.gethotArticleList()
-      await this.getTagList()
+      if (this.articleList.length == 0 && this.$route.name == 'articleList') {
+        await this.getArticleList(this.pagination)
+      }
+      if (this.hotArticleList.length == 0) {
+        await this.gethotArticleList()
+      }
+      if (this.tagList.length == 0) {
+        await this.getTagList()
+      }
+    },
+    dataScroll: function() {
+      try {
+        this.scroll = document.documentElement.scrollTop || document.body.scrollTop
+        // console.log(this.scroll)
+        this.aside =
+          document.documentElement.scrollTop || document.body.scrollTop || document.querySelector('.is_fixed').scrollTop
+        // console.log(this.aside)
+      } catch (ex) {
+        console.error(ex)
+      }
     },
     // 加载更多
     loadmoreArticle() {
@@ -174,12 +200,6 @@ export default {
 
 <style scoped lang="scss">
 .wrapper {
-  // display: flex;
-  // flex-direction: row;
-  > .nav {
-    width: 130px;
-    margin-right: 20px;
-  }
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s;

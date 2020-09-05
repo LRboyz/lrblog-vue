@@ -1,11 +1,11 @@
 <template>
   <div class="tag-wrapper">
-    <el-card style="min-height: 300px;">
+    <el-card style="min-height: 300px;" shadow="hover">
       <div slot="header" class="header">
         <i class="icon el-icon-discount" style="margin-right: 5px;"></i>
         热门标签
       </div>
-      <div class="tag-list">
+      <div v-if="tagList.length > 0" class="tag-list">
         <el-tag v-for="tag in tagList" v-bind:key="tag.id" :hit="false" effect="light" type="info">
           <router-link :to="{ path: '/tag/' + `${tag.id}` }" target="_blank">
             <div alt="黑客派" class="tag-image" :style="`background-image: url('${tag.thumbnail}');`"></div>
@@ -13,6 +13,7 @@
           </router-link>
         </el-tag>
       </div>
+      <skeleton-paragraph v-else class="content" :lines="5" line-height="1.2em" />
     </el-card>
   </div>
 </template>

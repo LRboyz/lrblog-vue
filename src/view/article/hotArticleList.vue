@@ -1,16 +1,19 @@
 <template>
   <div class="hot-wrapper">
-    <el-card>
+    <el-card shadow="hover">
       <div slot="header" class="header">
         <i class="iconfont icon-hotfill" style="margin-right: 5px; color: #ff5722;"></i>
         热门文章
       </div>
-      <div class="hot-title" v-for="(tit, index) in hotArticleList" :key="tit.id">
-        <i class="number">{{ index + 1 }}</i>
-        <router-link :to="`/article/${tit.id}`">
-          <span class="title">{{ tit.title | filterTitle(24) }}</span>
-        </router-link>
+      <div v-if="hotArticleList.length > 0">
+        <div class="hot-title" v-for="(tit, index) in hotArticleList" :key="tit.id">
+          <i class="number">{{ index + 1 }}</i>
+          <router-link :to="`/article/${tit.id}`">
+            <span class="title">{{ tit.title | filterTitle(24) }}</span>
+          </router-link>
+        </div>
       </div>
+      <skeleton-paragraph v-else class="content" :lines="10" line-height="1.2em" />
     </el-card>
   </div>
 </template>
@@ -52,6 +55,7 @@ export default {
       transition: margin 0.25s;
     }
     .title:hover {
+      color: $theme;
       margin-left: 10px;
       text-decoration: underline;
     }

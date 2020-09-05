@@ -15,6 +15,9 @@ import store from '@/store'
 import App from '@/app.vue'
 
 import StickyTop from '@/component/base/sticky-top/sticky-top'
+import SkeletonBase from '@/component/skeleton/base'
+import SkeletonLine from '@/component/skeleton/line'
+import SkeletonParagraph from '@/component/skeleton/paragraph'
 import LIcon from '@/component/base/icon/lin-icon'
 import SourceCode from '@/component/base/source-code/source-code'
 // eslint-disable-next-line
@@ -40,6 +43,9 @@ Vue.component(CollapseTransition.name, CollapseTransition)
 Vue.component('sticky-top', StickyTop)
 Vue.component('l-icon', LIcon)
 Vue.component('source-code', SourceCode)
+Vue.component(SkeletonBase.name, SkeletonBase)
+Vue.component(SkeletonLine.name, SkeletonLine)
+Vue.component(SkeletonParagraph.name, SkeletonParagraph)
 
 /* eslint no-unused-vars: 0 */
 const AppInstance = new Vue({

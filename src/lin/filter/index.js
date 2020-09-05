@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from 'vue'
 import Utils from '../util/util'
 /*
@@ -26,6 +27,36 @@ const globalFilter = {
     const d = `0${date.getDate()}`
     const val = `${y}-${m.substring(m.length - 2, m.length)}-${d.substring(d.length - 2, d.length)}`
     return val
+  },
+
+  formatTime(time, option) {
+    if (typeof time !== Number) {
+      time = new Date(time.split(' ')).getTime()
+    }
+    if (('' + time).length === 10) {
+      time = parseInt(time) * 1000
+    } else {
+      time = +time
+    }
+    const d = new Date(time)
+    const now = Date.now()
+
+    const diff = (now - d) / 1000
+
+    if (diff < 30) {
+      return '刚刚'
+    } else if (diff < 3600) {
+      return Math.ceil(diff / 60) + '分钟前'
+    } else if (diff < 3600 * 24) {
+      return Math.ceil(diff / 3600) + '小时前'
+    } else if (diff < 3600 * 24 * 2) {
+      return '1天前'
+    }
+    if (option) {
+      return parseTime(time, option)
+    } else {
+      return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分'
+    }
   },
 
   filterTimeYmdHms(value) {

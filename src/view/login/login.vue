@@ -2,7 +2,7 @@
   <div class="login">
     <div class="team-name hidden-sm-and-down"><img src="@/assets/image/login/team-name.png" alt="logo" /></div>
     <div class="form-box" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)">
-      <div class="title"><h1 title="Lin">Lin CMS</h1></div>
+      <div class="title"><h1 title="Lin">LRBlog 登陆系统</h1></div>
       <form class="login-form" autocomplete="off" @submit.prevent="throttleLogin()">
         <div class="form-item nickname">
           <span class="icon account-icon"></span>
@@ -106,7 +106,7 @@ export default {
         padding-left: 74px;
         box-sizing: border-box;
         text-align: left;
-        color: #8c98ae;
+        // color: #8c98ae;
       }
     }
 
@@ -124,7 +124,7 @@ export default {
           width: 100%;
           height: 100%;
           background: transparent;
-          color: #c4c9d2;
+          // color: #c4c9d2;
           font-size: 14px;
           padding-left: 74px;
           box-sizing: border-box;

@@ -52,6 +52,9 @@ export default {
   [types.GET_CATEGORY_LIST](state, list) {
     state.categoryList = list
   },
+  [types.EMPTY_ARTICLE_LIST](state) {
+    state.articleList = []
+  },
   // 将文章列表存入vuex
   [types.SET_ARTICLE_LIST](state, list) {
     state.articleList = list

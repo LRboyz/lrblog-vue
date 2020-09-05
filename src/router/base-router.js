@@ -2,14 +2,16 @@
 let baseRouter = [
   {
     path: '/index/:category_name?/:tag_name?',
-    name: 'index',
+
     component: () => import('@/view/home/index.vue'),
     children: [
       {
+        name: 'articleList',
         path: '',
         component: () => import('@/view/article/articleListItem.vue'),
       },
       {
+        name: 'articleDetail',
         path: '/article/:id?',
         component: () => import('@/view/article/articleDetail.vue'),
       },

@@ -1,16 +1,22 @@
 <template>
-  <div class="nav-wrapper">
-    <el-row class="row-bg" :gutter="20">
-      <el-col :xs="24" :md="17" :lg="24">
-        <ul class="nav-list ml-10" v-for="(cat, index) in categoryList" :key="cat.id">
-          <li :class="{ active: category_name == cat.category_name }" @click="handleChange(index, cat.category_name)">
-            <el-avatar shape="square" size="small" :src="cat.thumbnail" style="margin: 0px 15px 0 20px;"></el-avatar>
-            {{ cat.category_name }}
-          </li>
-        </ul>
-      </el-col>
-    </el-row>
+  <!-- <div class="nav-wrapper"> -->
+  <!-- <el-row class="row-bg" :gutter="20">
+      <el-col :xs="24" :md="17" :lg="24"> -->
+  <div class="nav-list">
+    <div
+      v-for="(cat, index) in categoryList"
+      :key="cat.id"
+      class="nav-item"
+      :class="{ active: category_name == cat.category_name }"
+      @click="handleChange(index, cat.category_name)"
+    >
+      <el-avatar shape="square" size="small" :src="cat.thumbnail" style="margin: 0px 15px 0 20px;"></el-avatar>
+      <span class="fs-xs fw-bold">{{ cat.category_name }}</span>
+    </div>
   </div>
+  <!-- </el-col>
+    </el-row> -->
+  <!-- </div> -->
 </template>
 
 <script>
@@ -43,40 +49,41 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.nav-wrapper {
-  .nav-list {
+.nav-list {
+  min-width: 110px;
+  width: 100%;
+  border-radius: 8px;
+  // border: 2px solid rgb(134, 160, 245);
+
+  padding-bottom: 20px;
+  // display: flex;
+  // position: fixed;
+  .nav-item {
+    cursor: pointer;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 20px;
     display: flex;
+    align-items: center;
+  }
+  .nav-item:hover {
+    // border-radius: 8px;
+    background: rgba(211, 219, 247, 0.6);
+    color: $parent-title-color;
+    transition: 0.3s ease-in-out;
+    // transform: scale(1.1);
+    font-weight: bold;
+  }
+  .active {
+    transition: 0.5s;
+    color: #3963bc;
+    font-weight: bold;
+    background: rgba(211, 219, 247, 0.6);
+  }
+}
+@media (max-width: 980px) {
+  .nav-list {
     flex-direction: column;
-    background: transparent;
-    .active {
-      transition: 0.5s;
-      color: #3963bc;
-      font-weight: bold;
-      background-color: #ffffff;
-    }
-    li {
-      width: 100px;
-      cursor: pointer;
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      height: 40px;
-      font-weight: bold;
-      border-radius: 8px;
-      font-family: $font-family-base;
-      font-size: 12px;
-      line-height: 40px;
-      margin: 4px 0 8px;
-      padding: 0 16px 0 0px;
-    }
-    li:hover {
-      background: #ffffff;
-      color: $parent-title-color;
-      transition: 0.3s ease-in-out;
-      // transform: scale(1.1);
-      font-weight: bold;
-    }
   }
 }
 </style>
