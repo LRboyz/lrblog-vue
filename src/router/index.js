@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from 'vue'
 import Router from 'vue-router'
 import NProgress from 'nprogress'
@@ -5,7 +6,7 @@ import 'nprogress/nprogress.css'
 import routes from './route'
 import store from '../store'
 import appConfig from '@/config/index'
-import Util from '@/lin/util/util'
+
 // progress bar
 
 Vue.use(Router)
@@ -39,7 +40,7 @@ let isLoginRequired = routeName => {
 }
 
 const router = new Router({
-  // mode: 'history',
+  mode: 'hash',
   scrollBehavior: () => ({
     y: 0,
   }),
@@ -47,41 +48,41 @@ const router = new Router({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  // console.log(111)
-  NProgress.start()
-  // 登录验证
-  if (isLoginRequired(to.name) && !store.state.logined) {
-    next({ path: '/login' })
-    return
-  }
+// router.beforeEach((to, from, next) => {
+//   // console.log(111)
+//   NProgress.start()
+//   // 登录验证
+//   if (isLoginRequired(to.name) && !store.state.logined) {
+//     next({ path: '/index' })
+//     return
+//   }
 
-  // TODO: tab 模式重复点击验证
+//   // TODO: tab 模式重复点击验证
 
-  // 权限验证
-  if (store && store.state && store.getters) {
-    const { permissions, user } = store.getters
-    if (to.path !== '/about' && !Util.hasPermission(permissions, to.meta, user)) {
-      Vue.prototype.$notify({
-        title: '无权限',
-        dangerouslyUseHTMLString: true,
-        message: '<strong class="my-notify">您无此页面的权限哟</strong>',
-      })
-      next({ path: '/about' })
-      return
-    }
-  }
+//   // 权限验证
+//   if (store && store.state && store.getters) {
+//     const { permissions, user } = store.getters
+//     if (to.path !== '/about' && !Util.hasPermission(permissions, to.meta, user)) {
+//       Vue.prototype.$notify({
+//         title: '无权限',
+//         dangerouslyUseHTMLString: true,
+//         message: '<strong class="my-notify">您无此页面的权限哟</strong>',
+//       })
+//       next({ path: '/about' })
+//       return
+//     }
+//   }
 
-  // 路由发生变化重新计时
-  Vue.prototype.$_lin_jump()
+//   // 路由发生变化重新计时
+//   Vue.prototype.$_lin_jump()
 
-  // 路由发生变化修改页面title
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
+//   // 路由发生变化修改页面title
+//   if (to.meta.title) {
+//     document.title = to.meta.title
+//   }
 
-  next()
-  NProgress.done()
-})
+//   next()
+//   NProgress.done()
+// })
 
 export default router

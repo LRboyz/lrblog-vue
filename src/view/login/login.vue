@@ -1,9 +1,10 @@
 <template>
   <div class="login">
-    <div class="team-name hidden-sm-and-down"><img src="@/assets/image/login/team-name.png" alt="logo" /></div>
     <div class="form-box" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)">
-      <div class="title"><h1 title="Lin">LRBlog 登陆系统</h1></div>
-      <form class="login-form" autocomplete="off" @submit.prevent="throttleLogin()">
+      <div class="title">
+        <h1 title="Lin"><span class="theme fw-bold">LR</span>Blog 登陆系统</h1>
+      </div>
+      <!-- <form class="login-form" autocomplete="off" @submit.prevent="throttleLogin()">
         <div class="form-item nickname">
           <span class="icon account-icon"></span>
           <input type="text" v-model="form.username" autocomplete="off" placeholder="请填写用户名" />
@@ -13,7 +14,7 @@
           <input type="password" v-model="form.password" autocomplete="off" placeholder="请填写用户登录密码" />
         </div>
         <button class="submit-btn" type="submit">登录</button>
-      </form>
+      </form> -->
     </div>
   </div>
 </template>
@@ -103,9 +104,13 @@ export default {
       margin-bottom: 15%;
 
       h1 {
+        font-weight: bold;
         padding-left: 74px;
         box-sizing: border-box;
         text-align: left;
+        .theme {
+          color: $theme;
+        }
         // color: #8c98ae;
       }
     }
@@ -123,7 +128,7 @@ export default {
         input {
           width: 100%;
           height: 100%;
-          background: transparent;
+          // background: transparent;
           // color: #c4c9d2;
           font-size: 14px;
           padding-left: 74px;
@@ -131,17 +136,18 @@ export default {
         }
       }
 
-      .form-item.nickname {
-        background: url('../../assets/image/login/nickname.png') no-repeat;
-        background-size: 100% auto;
-        background-position: left bottom;
-      }
+      // .form-item.nickname {
+      //   background: rgb(160, 167, 235);
+      //   // background: url('../../assets/image/login/nickname.png') no-repeat;
+      //   background-size: 100% auto;
+      //   background-position: left bottom;
+      // }
 
-      .form-item.password {
-        background: url('../../assets/image/login/password.png') no-repeat;
-        background-size: 100% auto;
-        background-position: left bottom;
-      }
+      // .form-item.password {
+      //   background: url('../../assets/image/login/password.png') no-repeat;
+      //   background-size: 100% auto;
+      //   background-position: left bottom;
+      // }
 
       .submit-btn {
         width: 100%;
@@ -152,7 +158,7 @@ export default {
         box-sizing: border-box;
         padding: 0 10px;
         padding-left: 74px;
-        background: url('../../assets/image/login/login-btn.png') no-repeat;
+        // background: url('../../assets/image/login/login-btn.png') no-repeat;
         background-size: 90% auto;
         background-position: center bottom;
         border: none;

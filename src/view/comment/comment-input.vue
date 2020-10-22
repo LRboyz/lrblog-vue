@@ -1,115 +1,150 @@
 <template>
-  <div class="input">
-    <el-avatar
-      :size="40"
-      src="http://www.lrboy.live/2020/08/22/0f2d2788-e489-11ea-bc2f-f45c89cb3825.jpg"
-      class="avatar"
-    />
-    <el-form ref="form" :rules="rules" :model="model" class="form">
-      <el-form-item prop="text">
-        <el-input
-          type="textarea"
-          :autosize="{ minRows: 2, maxRows: 4 }"
-          placeholder="请输入评论内容"
-          v-model="model.text"
-          minlength="1"
-          :maxlength="surplus"
-          show-word-limit
-        ></el-input>
-      </el-form-item>
-      <el-form-item style="text-align: right;">
-        <el-button type="primary" @click="addComment" :disabled="model.text == ''">发布</el-button>
-      </el-form-item>
-    </el-form>
+  <div v-clickoutside="hideReplyBtn" class="my-reply">
+    <!-- <el-avatar class="header-img" :size="40" :src="user.avatar"></el-avatar> -->
+    <div class="reply-info">
+      <el-input
+        type="textarea"
+        v-model="replyComment"
+        id="replyInput"
+        placeholder="撰写评论..."
+        class="reply-input"
+        clearable
+        @focus="showReplyBtn"
+      ></el-input>
+    </div>
+    <div class="reply-btn-box" v-show="btnShow">
+      <el-button class="reply-btn" size="medium" @click.prevent="sendComment" type="primary">
+        发表评论
+      </el-button>
+    </div>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
+import { mapGetters } from 'vuex'
 import commentApi from '@/model/comment'
+
+const clickoutside = {
+  // 初始化指令
+  bind(el, binding, vnode) {
+    function documentHandler(e) {
+      // 这里判断点击的元素是否是本身，是本身，则返回
+      if (el.contains(e.target)) {
+        return false
+      }
+      // 判断指令中是否绑定了函数
+      if (binding.expression) {
+        // 如果绑定了函数 则调用那个函数，此处binding.value就是handleClose方法
+        binding.value(e)
+      }
+    }
+    // 给当前元素绑定个私有变量，方便在unbind中可以解除事件监听
+    el.vueClickOutside = documentHandler
+    document.addEventListener('click', documentHandler)
+  },
+  update() {},
+  unbind(el, binding) {
+    // 解除事件监听
+    document.removeEventListener('click', el.vueClickOutside)
+    delete el.vueClickOutside
+  },
+}
 
 export default {
   name: 'CommentInput',
-  props: {
-    form: {
-      type: Object,
-      default() {
-        return {
-          reply_user_id: null,
-          post_id: null,
-          text: '',
-        }
-      },
-    },
-  },
+  directives: { clickoutside },
   data() {
     return {
       disabled: true,
-      surplus: 500,
-      model: {
-        text: '',
-      },
-      rules: {
-        text: [
-          {
-            required: true,
-            message: '请输入评论内容',
-            trigger: 'blur',
-          },
-        ],
-      },
+      replyComment: '',
+      btnShow: false,
     }
   },
   created() {},
-  computed: {},
+  computed: {
+    post_id() {
+      return this.$route.params.id
+    },
+    ...mapGetters(['user']),
+  },
   methods: {
-    addComment() {
-      this.$refs.form.validate(async valid => {
-        if (valid) {
-          const text = this.model.text.trim()
-          if (text === '') {
-            this.$message({
-              message: '发布内容为空!',
-              type: 'warning',
-            })
-            return
-          }
-          // eslint-disable-next-line
-          let res = await commentApi.addComment(Object.assign(this.form, { text: text }))
-          this.$message.success(`${res.msg}`)
-          this.$emit('success')
-          this.$refs.form.resetFields()
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    hideReplyBtn() {
+      this.btnShow = false
+    },
+    sendComment() {
+      if (!this.replyComment) {
+        this.$message({
+          showClose: true,
+          type: 'warning',
+          message: '评论不能为空',
+        })
+        return false
+      } else {
+        this.$emit('success', this.replyComment)
+      }
+    },
+    showReplyBtn() {
+      this.btnShow = true
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.input {
-  display: flex;
-  background-color: #fafbfc;
-  border: none;
-  // align-items: center;
-  .avatar {
-    margin-top: 6px;
-    margin-left: 10px;
-  }
-  .form {
-    margin-top: 6px;
-    margin-left: 20px;
-    margin-right: 20px;
-    flex: 1;
-  }
-}
 .el-form-item {
   margin-bottom: 1px !important;
   /deep/ .el-form-item__content {
     line-height: 20px;
     margin-bottom: 10px;
+  }
+}
+
+.my-reply {
+  // display: flex;
+  padding: 10px;
+  background-color: #eaf0f5;
+
+  .header-img {
+    display: nline-block;
+    vertical-align: top;
+  }
+  .reply-info {
+    display: inline-block;
+    margin-left: 5px;
+    width: 90%;
+    @media screen and (max-width: 1200px) {
+      width: 80%;
+    }
+    .reply-input {
+      // min-height: 20px;
+      line-height: 22px;
+      padding: 10px 5px;
+      color: #45526b;
+      background-color: #fff;
+      border-radius: 5px;
+      &:empty:before {
+        content: attr(placeholder);
+      }
+      &:focus:before {
+        content: none;
+      }
+      &:focus {
+        padding: 8px 8px;
+        border: 1px solid $theme;
+        box-shadow: none;
+        outline: none;
+      }
+    }
+  }
+  .reply-btn-box {
+    height: 25px;
+    margin: 10px 0;
+  }
+  .reply-btn {
+    position: relative;
+    float: right;
+    margin-right: 15px;
   }
 }
 </style>

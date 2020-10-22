@@ -6,10 +6,10 @@ export default {
   user: {}, // 当前用户
   sideBarLevel: AppConfig.sideBarLevel || 3,
   defaultRoute: AppConfig.defaultRoute || '/about',
-  // 分类列表
-  categoryList: [],
   // 文章列表
   articleList: [],
+  // 分类列表
+  categoryList: [],
   // 推送消息
   readedMessages: [],
   unreadMessages: [],

@@ -44,9 +44,9 @@ export default {
   },
   methods: {
     ...mapActions(['loginOut', 'setUserAndState']),
-    ...mapMutations({
-      setUserAuths: 'SET_USER_AUTHS',
-    }),
+    // ...mapMutations({
+    //   setUserAuths: 'SET_USER_AUTHS',
+    // }),
     async getInformation() {
       try {
         const user = await User.getPermissions()

@@ -1,10 +1,5 @@
 <template>
-  <div id="background">
-    <div class="landscape"></div>
-    <div class="filter"></div>
-    <canvas id="canvas"></canvas>
-    <!-- <div class="background-image"></div> -->
-  </div>
+  <div id="background"></div>
 </template>
 
 <script>
@@ -210,28 +205,22 @@ export default Vue.extend({
 <style lang="scss" scoped>
 #background {
   position: fixed;
+  z-index: -1;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-  opacity: 0.5;
-  // background-image: url('../assets/image/blog/background.jpeg');
-  background: linear-gradient(to bottom, #49a7fa 0%, #30307ec6 100%);
-  animation: colorChange 100s ease-in-out infinite;
-  animation-fill-mode: both;
-  mix-blend-mode: overlay;
+  // opacity: 0.5;
+  // background: #edf5ff;
+  background-image: url('../assets/image/blog/background.png');
+  background-size: cover;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  // background: linear-gradient(to bottom, #0f67b5 0%, #ffffffff 100%);
+  // animation: colorChange 100s ease-in-out infinite;
+  // animation-fill-mode: both;
+  // mix-blend-mode: overlay;
 }
-// .filter {
-//   width: 100%;
-//   height: 100%;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   background: #fe5757;
-//   animation: colorChange 30s ease-in-out infinite;
-//   animation-fill-mode: both;
-//   mix-blend-mode: overlay;
-// }
 @keyframes colorChange {
   0% {
     background-position: 0% 50%;
@@ -242,26 +231,5 @@ export default Vue.extend({
   100% {
     background-position: 0% 50%;
   }
-  // 0%,
-  // 100% {
-  //   opacity: 0.5;
-  // }
-  // 50% {
-  //   opacity: 0.9;
-  // }
-}
-.landscape {
-  position: absolute;
-  bottom: 0px;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.4;
-  /*background-image:url(https://openclipart.org/image/2400px/svg_to_png/250847/Trees-Landscape-Silhouette.png);
-	*/
-  background-image: url('../assets/image/blog/xkbg.png');
-  background-size: 1000px 250px;
-  background-repeat: repeat-x;
-  background-position: center bottom;
 }
 </style>

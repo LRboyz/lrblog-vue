@@ -10,7 +10,7 @@ export default class User {
   static register(data) {
     return _axios({
       method: 'post',
-      url: 'cms/user/register',
+      url: 'user/register',
       data,
       handleError: true,
     })

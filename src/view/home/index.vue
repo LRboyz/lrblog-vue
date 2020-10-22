@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="wrapper">
     <el-row class="row-bg" :gutter="24">
-      <el-col :xs="24" :md="3">
-        <div class="nav"><Navbar :categoryList="categoryList" /></div>
+      <el-col :xs="22" :md="3" :lg="3">
+        <div class="nav"><Navbar /></div>
       </el-col>
-      <el-col :xs="22" :md="14">
+      <el-col :xs="22" :md="14" :lg="14">
         <div class="main-content">
           <transition name="fade">
-            <router-view></router-view>
+            <router-view :isFetching="loading" :articleList="articleList"></router-view>
           </transition>
           <!-- <Loading v-else /> -->
           <!--  加载更多 -->
-          <div v-show="$route.path === '/index'">
+          <div v-show="$route.path === '/index' && !loading">
             <el-button
               class="handan-btn hover-target"
               :disabled="loading || !isCanLoadMore"
@@ -23,15 +23,17 @@
             </el-button>
           </div>
         </div>
+        <skeleton-paragraph v-show="loading" class="content" :lines="25" line-height="1.2em" />
       </el-col>
       <el-backtop class="lin-back-top"></el-backtop>
       <!-- 右侧侧边栏 -->
-      <el-col :xs="22" :md="7">
+      <el-col :xs="22" :md="7" :lg="7">
         <div class="aside">
           <user-card />
           <div class="is_fixed">
-            <hot-article-list :hotArticleList="hotArticleList" class="mt-20" />
-            <tag-list :tagList="tagList" />
+            <hot-article-list />
+            <tag-list />
+            <Community />
           </div>
         </div>
       </el-col>
@@ -45,12 +47,11 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { mapMutations } from 'vuex'
 import Navbar from '@/component/layout/navbar'
-
 import ArticleApi from '@/model/article'
-import CategoryApi from '@/model/category'
 import HotArticleList from '@/view/article/hotArticleList'
 import TagList from '@/view/tag/tagList'
 import UserCard from '@/view/user/index'
+import Community from '@/view/community/index'
 
 export default {
   components: {
@@ -58,6 +59,7 @@ export default {
     HotArticleList,
     TagList,
     UserCard,
+    Community,
   },
   data() {
     return {
@@ -69,14 +71,14 @@ export default {
         category_name: null,
         tag_name: null,
       },
+      value: new Date(),
       aside: 0,
       scroll: 0,
       loading: false,
       isCanLoadMore: true,
-      categoryList: [],
       articleList: [],
-      hotArticleList: [],
-      tagList: [],
+      // hotArticleList: [],
+      // tagList: [],
     }
   },
   watch: {
@@ -88,9 +90,9 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(function() {
-      window.addEventListener('scroll', this.dataScroll, true)
-    })
+    // this.$nextTick(function () {
+    //   window.addEventListener('scroll', this.dataScroll, true)
+    // })
   },
   computed: {
     category_name() {
@@ -104,34 +106,10 @@ export default {
   methods: {
     async refresh() {
       this.pagination.currentPage = 0
-      this.any = new Date()
+      // this.any = new Date()
       await this.initData()
     },
-    // 获取分类列表
-    async getCategory() {
-      if (this.categoryList.length > 0) return
-      const res = await CategoryApi.getCategorys({
-        count: 20,
-        page: 0,
-      })
-      this.categoryList = res.data
-      this.get_category_list(this.categoryList)
-    },
-    // 获取热门文章列表
-    async gethotArticleList() {
-      const hot_list = await ArticleApi.gethotArticleList()
-      this.hotArticleList = hot_list.data
-      // console.log(this.hot_list)
-    },
-    // 获取Tag标签列表
-    async getTagList() {
-      const tag_list = await ArticleApi.getTagList({
-        page: 15,
-        page: 0,
-      })
-      this.tagList = tag_list.data
-      // console.log(this.tagList)
-    },
+
     // 获取文章列表
     async getArticleList(params) {
       this.loading = true
@@ -146,53 +124,46 @@ export default {
       if (isLoadMore) {
         // console.log('加载更多...')
         this.articleList = this.articleList.concat([...res.data])
-        this.get_article_list(this.articleList)
+        // this.get_article_list(this.articleList)
         this.pagination.pageTotal = res.current_total
-
         // console.log(this.articleList.length, this.pagination.pageTotal)
         if (this.articleList.length == this.pagination.pageTotal) {
           this.isCanLoadMore = false
         }
-        // console.log(this.articleList)
+        console.log(this.articleList)
       } else {
         // console.log('不是加载更多了')
         this.articleList = res.data
-        this.get_article_list(this.articleList)
+        // console.log(this.articleList)
+        // this.set_article_list(this.articleList)
       }
     },
     // 初始化数据
     async initData() {
-      console.log(this.$route)
-      await this.getCategory()
-      if (this.articleList.length == 0 && this.$route.name == 'articleList') {
-        await this.getArticleList(this.pagination)
-      }
-      if (this.hotArticleList.length == 0) {
-        await this.gethotArticleList()
-      }
-      if (this.tagList.length == 0) {
-        await this.getTagList()
-      }
+      // await this.getCategory()
+      // if (this.articleList.length == 0 && this.$route.name == 'articleList') {
+      await this.getArticleList(this.pagination)
+      // }
     },
-    dataScroll: function() {
-      try {
-        this.scroll = document.documentElement.scrollTop || document.body.scrollTop
-        // console.log(this.scroll)
-        this.aside =
-          document.documentElement.scrollTop || document.body.scrollTop || document.querySelector('.is_fixed').scrollTop
-        // console.log(this.aside)
-      } catch (ex) {
-        console.error(ex)
-      }
-    },
+    // dataScroll: function () {
+    //   try {
+    //     this.scroll = document.documentElement.scrollTop || document.body.scrollTop
+    //     // console.log(this.scroll)
+    //     this.aside =
+    //       document.documentElement.scrollTop || document.body.scrollTop || document.querySelector('.is_fixed').scrollTop
+    //     // console.log(this.aside)
+    //   } catch (ex) {
+    //     console.error(ex)
+    //   }
+    // },
     // 加载更多
     loadmoreArticle() {
+      console.log('demo')
       this.pagination.currentPage += 1
       this.getArticleList(this.pagination)
     },
     ...mapMutations({
-      get_category_list: 'GET_CATEGORY_LIST',
-      get_article_list: 'SET_ARTICLE_LIST',
+      set_article_list: 'SET_ARTICLE_LIST',
     }),
   },
 }
@@ -211,9 +182,8 @@ export default {
     margin-bottom: 20px;
     flex: 1;
     .handan-btn {
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      padding: 10px 30px;
-      color: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(152, 134, 250, 0.639);
+      padding: 5px 20px;
       border-radius: 30px;
       -webkit-transition: all 0.25s ease-in-out;
       -o-transition: all 0.25s ease-in-out;
@@ -228,7 +198,7 @@ export default {
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
       span {
-        color: rgb(202, 107, 107);
+        color: $theme;
         font-weight: bold;
       }
     }
@@ -243,7 +213,7 @@ export default {
       height: 0;
       top: 50%;
       left: 50%;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(152, 134, 250, 0.639);
       opacity: 0;
       -webkit-transform: translateX(-50%) translateY(-50%) rotate(60deg);
       -ms-transform: translateX(-50%) translateY(-50%) rotate(60deg);
@@ -256,8 +226,8 @@ export default {
     }
     .handan-btn {
       display: inline-block;
-      padding: 1.1em 2em;
-      border-radius: 3px;
+      padding: 0.9em 1.5em;
+      border-radius: 30px;
       font-weight: bold;
       font-size: 0.8rem;
       letter-spacing: 1px;
@@ -338,7 +308,7 @@ export default {
     margin-left: 20px;
     // width: 220px;
   }
-  @media (max-width: 980px) {
+  @media (max-width: 1100px) {
     .nav {
       display: none;
     }

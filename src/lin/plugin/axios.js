@@ -125,12 +125,12 @@ _axios.interceptors.response.use(
           message: msg,
           type: 'error',
         })
-        setTimeout(() => {
-          store.dispatch('loginOut')
-          const { origin } = window.location
-          window.location.href = origin
-        }, 2500)
-        return resolve(null)
+        // setTimeout(() => {
+        //   store.dispatch('loginOut')
+        //   const { origin } = window.location
+        //   window.location.href = origin
+        // }, 2500)
+        // return resolve(null)
       }
       // 令牌相关，刷新令牌
       if (error_code === 10040 || error_code === 10041 || error_code === 10050 || error_code === 10051) {
@@ -151,7 +151,7 @@ _axios.interceptors.response.use(
       // 第二种情况：采用前端自己的一套异常提示信息；特殊情况：如果本次请求添加了 showBackend: true, 弹出后端返回错误信息。
       if (Config.useFrontEndErrorMsg && !res.config.showBackend) {
         // 弹出前端自定义错误信息
-        const errorArr = Object.entries(ErrorCode).filter(v => v[0] === code.toString())
+        const errorArr = Object.entries(ErrorCode).filter(v => v[0] === errror_code.toString())
         // 匹配到前端自定义的错误码
         if (errorArr.length > 0 && errorArr[0][1] !== '') {
           msg = errorArr[0][1] // eslint-disable-line

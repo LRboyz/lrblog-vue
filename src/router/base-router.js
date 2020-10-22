@@ -15,23 +15,21 @@ let baseRouter = [
         path: '/article/:id?',
         component: () => import('@/view/article/articleDetail.vue'),
       },
-      // {
-      //   path: '/index/test',
-      //   component: () => import('@/view/home/test.vue'),
-      // },
-      // {
-      //   path: '/index/test2',
-      //   component: () => import('@/view/home/test2.vue'),
-      // },
     ],
     meta: { title: '首页' },
   },
-  // {
-  //   path: '/article/:id',
-  //   name: 'articleDetail',
-  //   component: () => import('@/view/article/articleDetail.vue'),
-  //   meta: { title: '文章详情页' },
-  // },
+  {
+    path: '/time',
+    name: 'time',
+    component: () => import('@/view/time/index.vue'),
+    meta: { title: '时间轴' },
+  },
+  {
+    path: '/tag',
+    name: 'tag',
+    component: () => import('@/view/tag/allTag.vue'),
+    meta: { title: '标签' },
+  },
   // {
   //   path: '/index/:category_name?',
   //   name: 'categoryList',

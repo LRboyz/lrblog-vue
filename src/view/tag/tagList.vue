@@ -1,9 +1,14 @@
 <template>
   <div class="tag-wrapper">
-    <el-card style="min-height: 300px;" shadow="hover">
-      <div slot="header" class="header">
-        <i class="icon el-icon-discount" style="margin-right: 5px;"></i>
-        热门标签
+    <el-card style="min-height: 300px;">
+      <div slot="header" class="header flex">
+        <i class="icon el-icon-discount"></i>
+        <span class="fw-bold" style="margin-left: 8px;">热门标签</span>
+        <span style="flex: 1;"></span>
+        <router-link :to="{ path: '/tag' }" target="_blank">
+          <span class="theme">查看更多</span>
+          <i class="theme el-icon-caret-right"></i>
+        </router-link>
       </div>
       <div v-if="tagList.length > 0" class="tag-list">
         <el-tag v-for="tag in tagList" v-bind:key="tag.id" :hit="false" effect="light" type="info">
@@ -19,11 +24,27 @@
 </template>
 
 <script>
+/* eslint-disable */
+import ArticleApi from '@/model/article'
+
 export default {
   name: 'tagList',
-  props: {
-    tagList: {
-      type: Array,
+  data() {
+    return {
+      tagList: [],
+    }
+  },
+  created() {
+    this.getTagList()
+  },
+  methods: {
+    // 获取Tag标签列表
+    async getTagList() {
+      const tag_list = await ArticleApi.getTagList({
+        count: 10,
+        page: 0,
+      })
+      this.tagList = tag_list.data
     },
   },
 }

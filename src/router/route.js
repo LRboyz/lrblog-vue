@@ -12,17 +12,10 @@ const routes = [
     children: baseRouter,
   },
   // {
-  //   path: '/home',
-  //   name: 'Home',
-  //   redirect: '/about',
-  //   component: Home,
-  //   children: [...homeRouter],
+  //   path: '/login',
+  //   name: 'login',
+  //   component: () => import('@/view/login/login'),
   // },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/view/login/login'),
-  },
   {
     redirect: '/404',
     path: '*',

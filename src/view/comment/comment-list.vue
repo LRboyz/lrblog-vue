@@ -1,167 +1,116 @@
 <template>
   <div>
-    <el-card class="margin-top-xs" v-if="commentable == false">
-      <section>
-        <h4 style="line-height: 32px;">评论已关闭</h4>
+    <!-- 打赏区域 -->
+    <div class="praise">
+      <span class="p-item">{{ detail.commentsCount }} 条看法</span>
+      <span class="p-item p-item2" @click.prevent="likeArticle">
+        <i :class="isLikedPage ? 'is_LikedPage' : ''" class="iconfont icon-like fs-sm"></i>
 
-        <div>
-          <el-button type="primary" plain style="float: right;" @click="() => updateCommentable(true)"
-            >开启评论</el-button
-          >
+        {{ detail.likes }} 个人觉得这篇文章很赞
+      </span>
+      <span class="p-item" @click.prevent="good">
+        <i class="iconfont icon-zan fs-sm"></i>
+        写的不错！</span
+      >
+      <el-dialog title="打赏一个呗～" :visible.sync="isShow">
+        <div class="dialog">
+          <img src="../../assets/image/blog/zfb.png" alt="" srcset="" />
+          <img src="../../assets/image/blog/wxzs.png" alt="" srcset="" />
         </div>
-      </section>
-    </el-card>
-    <div v-else>
-      <el-card shadow="never" :body-style="{ 'padding-bottom': '0px' }" style="margin-bottom: 20px; margin-top: 20px;">
-        <comment-input
-          @success="getComments"
-          :form="{
-            post_id: post_id,
-            comment_user_id: comment_user_id,
-            reply_user_id: form.reply_user_id,
-          }"
-        ></comment-input>
-      </el-card>
-      <el-card shadow="never">
-        <div slot="header" class="clearfix">
-          <span>全部评论</span>
-          <el-popconfirm
-            confirmButtonText="确认"
-            cancelButtonText="取消"
-            icon="el-icon-info"
-            iconColor="red"
-            title="你确认要关闭评论"
-            @onConfirm="() => updateCommentable(false)"
-          >
-            <el-button slot="reference" style="float: right; padding: 3px 0;" type="text">关闭评论</el-button>
-          </el-popconfirm>
+      </el-dialog>
+    </div>
+    <!-- 评论区域 -->
+    <comment-input @success="sendComment" />
+    <div v-for="(item, i) in comments" :key="i" class="author-title reply-father">
+      <div class="top-comment">
+        <el-avatar class="header-img" :size="40" :src="item.reply_from.avatar"></el-avatar>
+        <div class="author-info">
+          <span class="author-name">{{ item.reply_from.nickname }}</span>
         </div>
 
-        <comment-item
-          v-for="(comment, index) in comments"
-          :key="comment._id"
-          :avatar="comment.user.avatar"
-          :author="comment.user"
-          :content="comment.text"
-          :time="comment.create_time"
-          @addReply="handleAddReply(comment, index)"
-          @handleclickAvatar="handleClickAvatar(comment)"
-          @handleclickAuthor="handleClickAuthor(comment)"
-          @handleaddReply="handleAddReply(comment, index)"
-          @handledeleteReply="handleDeleteReply(comment, index)"
-          @clickTool="item => handleClickTool(item, comment, index)"
-          :tools="[
-            {
-              text: comment.votes,
-              title: '点赞',
-              icon: 'iconfont icon-zan',
-              status: comment.status,
-              is_Liked: getCommentLiked(comment._id),
-            },
-          ]"
-        >
-          <comment-input
-            slot="comment-input"
-            @success="() => getOtherComments(comment._id, index)"
-            :form="{
-              post_id: post_id,
-              comment_user_id: comment_user_id,
-              reply_user_id: reply_user_id,
-            }"
-          ></comment-input>
-          <reply-item
-            slot="reply-list"
-            v-for="(reply, i) in comment.other_comments"
-            :key="reply._id"
-            :author="reply"
-            :resp_user_info="reply"
-            :content="reply.text"
-            :time="reply.create_time"
-            @clickTool="($event, item) => handleClickReplyTool(item, reply, index, i)"
-            @addReply="handleAddCommentReply(reply, index, i)"
-            @deleteReply="handleDeleteCommentReply(reply, index, i)"
-            :replyVisible="reply.replyVisible"
-            :tools="[
-              {
-                text: reply.votes,
-                title: '点赞',
-                name: 'like',
-                icon: 'iconfont icon-' + (reply.is_Liked ? 'like-fill' : 'like'),
-              },
-            ]"
-          >
-            <comment-input
-              slot="reply-item-input"
-              @success="() => getOtherComments(reply_user_id, index)"
-              :form="{
-                post_id: post_id,
-                comment_user_id: comment_user_id,
-                reply_user_id: reply_user_id,
-              }"
-            ></comment-input>
-          </reply-item>
-        </comment-item>
-      </el-card>
+        <div class="talk-box">
+          <div>
+            <span class="content">{{ item.text }}</span>
+          </div>
+          <div class="icon-btn" @click.prevent="handleLike(item, i)">
+            <i :class="getCommentLiked(item.comment_id) ? 'is_Liked' : ''" class="iconfont icon-zan ml-10"></i>
+            <span class="fs-xs" v-show="item.votes > 0">{{ item.votes }}</span>
+          </div>
+          <div class="desc"></div>
+          <p class="reply" @click.prevent="replyBtn(item, i)">{{ replyText }}</p>
+          <div class="desc"></div>
+          <p class="author-time fs-sm ml-10">{{ item.create_time | formatTime }}</p>
+        </div>
+        <div class="reply-box" v-show="item.visitable">
+          <comment-input @success="sendReplyComment(arguments, item)" />
+        </div>
+      </div>
+      <reply-item
+        :otherComments="item.otherComments"
+        @replyLiked="handleLike"
+        @replyOtherComment="sendOtherComment(arguments, item)"
+      ></reply-item>
     </div>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import { mapGetters } from 'vuex'
 import commentApi from '@/model/comment'
-import CommentItem from '@/view/comment/comment-item'
-import ReplyItem from '@/view/comment/reply-item'
+import ArticleApi from '@/model/article'
+import CommentInput from './comment-input'
+import ReplyItem from './reply-item'
 import userLike from '@/model/user-like'
-import CommentInput from '@/view/comment/comment-input'
 import { getJSONStorageReader } from '@/lin/util/localStorage'
-// import InfiniteLoading from 'vue-infinite-loading'
-
+import { log } from 'util'
 const localLikesHistory = getJSONStorageReader('user_like_history')
 
 export default {
-  name: 'CommentList',
-  components: { CommentItem, ReplyItem, CommentInput },
-  data() {
-    return {
-      comments: [],
-      form: {
-        reply_user_id: null,
-        comment_user_id: null,
-        post_id: null,
-      },
-      // 用户历史数据
-      historyLikes: {
-        pages: [],
-        comments: [],
-      },
-      pagination: {
-        currentPage: 0,
-        pageSize: 10,
-        pageTotal: 0,
-      },
-      any: 'any' + new Date(),
-    }
+  name: 'ArticleComment',
+  components: {
+    CommentInput,
+    ReplyItem,
   },
   props: {
-    post_id: {
-      type: String,
-    },
-    commentable: {
-      type: Boolean,
-      default: true,
-    },
-    comment_user_id: {
-      type: [String, Number],
-    },
-    reply_user_id: {
-      type: [String, Number],
+    detail: {
+      type: Object,
     },
   },
   created() {
     this.initUserLike()
     this.getComments()
+    // console.log(this.getCommentLiked())
   },
-  computed: {},
+  data() {
+    return {
+      // 用户历史数据
+      historyLikes: {
+        pages: [],
+        comments: [],
+      },
+      btnShow: false,
+      index: '0',
+      myName: 'Lana Del Rey',
+      isShow: false,
+      myId: 19870621,
+      to: '',
+      toId: -1,
+      comments: [],
+    }
+  },
+  computed: {
+    post_id() {
+      return this.$route.params.id
+    },
+    replyText() {
+      return this.visitable == true ? '取消回复' : '回复'
+    },
+    isLikedPage() {
+      return this.historyLikes.pages.includes(this.post_id)
+    },
+    ...mapGetters(['user']),
+  },
   methods: {
     // 初始化本地用户即本地用户的点赞历史
     initUserLike() {
@@ -171,106 +120,279 @@ export default {
       }
     },
     async getComments() {
-      this.pagination.currentPage = 0
-      this.any = new Date()
       const commentList = await commentApi.getPublicComments({
         post_id: this.post_id,
       })
+      commentList.data.forEach(item => {
+        item.visitable = false
+        if (item.otherComments.length > 0) {
+          item.otherComments.forEach(reply => {
+            reply.visitable = false
+          })
+        }
+      })
       this.comments = commentList.data
     },
-    async handleClickTool(item, comment, index) {
-      // console.log(item, comment, index)
-      await this.handleLike(comment, index)
+    good() {
+      this.isShow = !this.isShow
+      console.log('写得不错！')
     },
-    handleLike(comment, index) {
-      console.log(comment)
-      if (this.getCommentLiked(comment._id)) {
+    replyBtn(item, index) {
+      this.comments[index].visitable = !item.visitable
+    },
+    // 喜欢文章
+    likeArticle() {
+      if (this.isLikedPage) {
+        this.$notify({
+          title: '温馨提示',
+          message: '您已经点赞过这篇文章了呢！',
+          type: 'warning',
+          position: 'top-right',
+        })
+        return false
+      } else {
+        ArticleApi.likeArticle(this.$route.params.id).then(res => {
+          this.$message.success(`${res.msg}`)
+          this.detail.likes += 1
+          this.historyLikes.pages.push(this.post_id)
+          localLikesHistory.set(this.historyLikes)
+        })
+      }
+    },
+    // 点赞评论
+    handleLike(item, index) {
+      console.log(item, index)
+      if (this.getCommentLiked(item.comment_id)) {
         this.comments[index].is_Liked = true
+        this.$notify.info({
+          title: '温馨提示',
+          message: '您已经点过赞了哦 ～',
+          position: 'top-left',
+        })
         return false
       } else {
         this.comments[index].is_Liked = false
       }
       userLike
         .likeOrCancel({
-          comment_id: comment._id,
+          comment_id: item.comment_id,
         })
         .then(res => {
           this.$message.success(`${res.msg}`)
           this.comments[index].is_Liked = true
           this.comments[index].votes += 1
-          this.historyLikes.comments.push(comment._id)
+          this.historyLikes.comments.push(item.comment_id)
           localLikesHistory.set(this.historyLikes)
         })
         .catch(error => {
           console.warn('评论点赞失败', error)
           alert('点赞失败！')
         })
+      // console.log(this.hisoryLikes)
     },
     // 获取某条评论是否被点赞
     getCommentLiked(comment_id) {
+      // console.log(comment_id)
       return this.historyLikes.comments.includes(comment_id)
     },
-    handleAddReply(comment, index) {
-      console.log('点击了回复按钮', comment, index)
-      this.comments[index].replyVisible = !comment.replyVisible
+    _inputShow(i) {
+      return this.comments[i].inputShow
+    },
+    sendComment(replyComment) {
+      // console.log(replyComment)
+      commentApi
+        .addComment({
+          post_id: this.post_id,
+          text: replyComment,
+        })
+        .then(res => {
+          console.log(res.data)
+          this.$message.success(`${res.msg}`)
+          this.replyComment = ''
+          this.getComments()
+        })
+        .catch(error => {
+          console.warn('评论发布失败', error)
+        })
+    },
+    sendReplyComment(reply_text, item) {
+      commentApi
+        .addReplyComment(item.comment_id, {
+          text: reply_text[0],
+          reply_user_id: item.reply_from._id,
+        })
+        .then(res => {
+          console.log(res.data)
+          this.$message.success(`${res.msg}`)
+          this.replyComment = ''
+          this.getComments()
+        })
+        .catch(error => {
+          console.warn('回复评论失败', error)
+        })
+    },
+    async sendOtherComment(other_comment, item) {
+      // console.log(other_comment[0], item)
+      commentApi
+        .addReplyComment(item.comment_id, {
+          text: other_comment[0],
+          reply_user_id: other_comment[1].reply_from._id,
+        })
+        .then(res => {
+          console.log(res.data)
+          this.$message.success(`${res.msg}`)
+          this.replyComment = ''
+          this.getComments()
+        })
+        .catch(error => {
+          console.warn('回复评论失败', error)
+        })
     },
   },
-  async getOtherComments(repky_user_id, index) {
-    console.log(reply_user_id, index)
-    // let res = await commentApi.getPublicComments({
-    //   subject_id: this.subject_id,
-    //   root_comment_id: root_comment_id,
-    // })
-    // res.items.forEach(item => {
-    //   item.replyVisible = false
-    // })
-    // this.comments[index].top_comment = res.items
-    // this.comments[index].replyVisible = false
-    // this.$emit('success', res.total)
-  },
-
-  // handleAddCommentReply(reply, index, i) {
-  //   this.comments[index].top_comment[i].replyVisible = !reply.replyVisible
-  // },
-  // async handleDeleteReply(comment, index) {
-  //   await commentApi.delectComment(comment.id)
-  //   this.getComments()
-  // },
-  // async handleDeleteCommentReply(reply, index, i) {
-  //   let res = await commentApi.delectComment(reply.id)
-  //   this.$message.success(`${res.message}`)
-  //   await this.getTopComments(reply.root_comment_id, index)
-  // },
-
-  // async handleClickReplyTool(item, reply, index, i) {
-  //   if (item.name == 'like') {
-  //     await this.handleReplyLike(reply, index, i)
-  //   }
-  // },
-
-  // async handleReplyLike(reply, index, i) {
-  //   let res = await userLike.likeOrCancel({
-  //     subject_id: reply.id,
-  //     subject_type: 2,
-  //   })
-  //   this.$message.success(`${res.message}`)
-  //   if (this.comments[index].top_comment[i].is_liked) {
-  //     this.comments[index].top_comment[i].is_liked = false
-  //     this.comments[index].top_comment[i].likes_quantity -= 1
-  //   } else {
-  //     this.comments[index].top_comment[i].is_liked = true
-  //     this.comments[index].top_comment[i].likes_quantity += 1
-  //   }
-  // },
-  // updateCommentable(commentable) {
-  //   this.$emit('updateCommentable', commentable)
-  // },
-  // },
 }
 </script>
 
 <style lang="scss" scoped>
-.icon-zan-fill {
-  color: red;
+.praise {
+  text-align: left;
+  margin: 20px 0;
+  .p-item {
+    border-radius: 14px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-right: 10px;
+    width: 100%;
+    padding: 5px 10px;
+    background: #eaf0f5;
+    color: #555555;
+  }
+  .p-item:nth-child(3) {
+    color: white;
+    animation: good 3s infinite;
+  }
+  .p-item:hover {
+    transition: 0.5s;
+    cursor: pointer;
+    color: white;
+    background: $theme;
+  }
+  .p-item2:hover {
+    transition: 0.5s;
+    cursor: pointer;
+    color: white;
+    background: rgb(89, 168, 238);
+  }
+  .dialog {
+    display: flex;
+    justify-content: space-evenly;
+    img {
+      width: 120px;
+      // height: 150px;
+    }
+  }
+  @keyframes good {
+    0% {
+      background: rgb(138, 189, 36);
+    }
+    100% {
+      background: rgb(4, 163, 221);
+    }
+  }
+}
+
+.author-title:not(:last-child) {
+  border-bottom: 1px solid rgba(178, 186, 194, 0.3);
+}
+.author-title {
+  padding: 10px;
+  .top-comment {
+    text-align: left;
+    // margin: 0;
+  }
+  .header-img {
+    display: inline-block;
+    vertical-align: top;
+  }
+  .author-info {
+    text-align: left;
+    display: inline-block;
+    margin-left: 10px;
+    // width: 60%;
+    height: 40px;
+    line-height: 30px;
+    > span {
+      display: block;
+      cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .author-name {
+      color: $theme;
+      // font-size: 18px;
+      font-weight: bold;
+    }
+  }
+  > span {
+    cursor: pointer;
+  }
+  .iconfont {
+    margin: 0 5px;
+  }
+  .talk-box {
+    margin: 0 50px;
+    .content {
+      font-size: 14px;
+      line-height: 25px;
+    }
+    .desc {
+      border-radius: 50%;
+      display: inline-block;
+      width: 3px;
+      margin: 3px 3px;
+      height: 3px;
+      background: #ccc;
+    }
+    .icon-btn {
+      color: rgb(99, 97, 97);
+      margin: 10px 5px 0 -5px;
+      cursor: pointer;
+      display: inline-block;
+      padding: 0 !important ;
+      @media screen and (max-width: 1200px) {
+        width: 20%;
+        padding: 7px;
+      }
+    }
+    .icon-btn:hover {
+      color: $theme;
+    }
+    .author-time {
+      color: rgb(99, 97, 97);
+      display: inline-block;
+    }
+    .reply {
+      padding: 5px;
+      color: rgb(99, 97, 97);
+      // padding: 0 10px;
+      display: inline-block;
+      font-size: 14px;
+    }
+    .reply:hover {
+      cursor: pointer;
+      color: $theme;
+    }
+  }
+  .reply-box {
+    text-align: left;
+    margin: 10px 0 0 50px;
+    background-color: #eaf0f5;
+  }
+}
+.is_Liked {
+  color: $theme;
+}
+.is_LikedPage {
+  color: orangered;
 }
 </style>

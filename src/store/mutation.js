@@ -48,15 +48,16 @@ export default {
     state.refreshOptions = option
   },
 
-  // 分类列表存入Vuex，方便拿取数据
-  [types.GET_CATEGORY_LIST](state, list) {
-    state.categoryList = list
-  },
-  [types.EMPTY_ARTICLE_LIST](state) {
-    state.articleList = []
-  },
   // 将文章列表存入vuex
   [types.SET_ARTICLE_LIST](state, list) {
     state.articleList = list
+  },
+  // // 将分类列表存入vuex
+  // [types.SET_CATEGORY_LIST](state, list) {
+  //   state.categoryList = list
+  // },
+
+  [types.EMPTY_ARTICLE_LIST](state) {
+    state.articleList = []
   },
 }

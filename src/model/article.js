@@ -20,8 +20,17 @@ class ArticleApi {
     const res = await get('article/archive')
     return res
   }
+  async likeArticle(id) {
+    const res = await post(`article/like/${id}`)
+    return res
+  }
   async getTagList(params) {
     const res = await get('blog/tag/list', params)
+    return res
+  }
+
+  async getAllTagList(params) {
+    const res = await get('blog/tag/all', params)
     return res
   }
 }

@@ -8,6 +8,11 @@ class Comment {
     return res
   }
 
+  async addReplyComment(id, params) {
+    const res = await post(`blog/comment/${id}`, params)
+    return res
+  }
+
   async getComment(id) {
     const res = await get(`blog/comment/${id}`)
     return res

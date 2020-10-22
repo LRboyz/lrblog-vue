@@ -49,12 +49,15 @@
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item prop="email" :rules="[{ required: true, message: '请输入邮件', trigger: 'blur' }]">
+          <el-form-item
+            prop="username"
+            :rules="[{ required: true, message: '请输入邮箱账户或用户名', trigger: 'blur' }]"
+          >
             <el-input
-              v-model="form.email"
+              v-model="form.username"
               prefix-icon="el-icon-user"
               autocomplete="off"
-              placeholder="请输入邮件"
+              placeholder="请输入邮箱账户或用户名"
               clearable
             ></el-input>
           </el-form-item>
@@ -64,6 +67,16 @@
               prefix-icon="el-icon-lock"
               autocomplete="off"
               placeholder="请输入密码"
+              show-password
+              clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="confirm_password" :rules="[{ required: true, message: '请输入密码', trigger: 'blur' }]">
+            <el-input
+              v-model="form.confirm_password"
+              prefix-icon="el-icon-lock"
+              autocomplete="off"
+              placeholder="请确认密码"
               show-password
               clearable
             ></el-input>
@@ -79,23 +92,13 @@
         <el-form-item label="第三方账号登录" class="oauth lin-form-item">
           <!-- <el-avatar icon="iconfont icon-QQ" title="qq登录" size="large"></el-avatar> -->
           <a href="javascript:void(0);" @click="() => signin('GitHub')">
-            <el-avatar
-              class="margin-left-xs"
-              icon="iconfont icon-github-fill"
-              title="github登录"
-              size="large"
-            ></el-avatar>
+            <el-avatar class="margin-left-xs" icon="iconfont icon-github" title="github登录" size="large"></el-avatar>
           </a>
           <a href="javascript:void(0);" @click="() => signin('QQ')">
-            <el-avatar class="margin-left-xs" icon="iconfont icon-QQ" title="qq登录" size="large"></el-avatar>
+            <el-avatar class="margin-left-xs" icon="iconfont icon-qq" title="qq登录" size="large"></el-avatar>
           </a>
           <a href="javascript:void(0);" @click="() => signin('Gitee')">
-            <el-avatar
-              class="margin-left-xs"
-              icon="iconfont icon-gitee-fill-round"
-              title="码云登录"
-              size="large"
-            ></el-avatar>
+            <el-avatar class="margin-left-xs" icon="iconfont icon-wechat" title="码云登录" size="large"></el-avatar>
           </a>
           <!-- <el-button type="primary" @click="()=>signin('GitHub')">GitHub</el-button> -->
         </el-form-item>
@@ -105,6 +108,8 @@
 </template>
 
 <script>
+/* eslint-disable */
+
 import { mapActions, mapMutations } from 'vuex'
 import User from '@/lin/model/user'
 // import oauth2 from '@/model/oauth2';
@@ -118,6 +123,7 @@ export default {
       form: {
         username: '',
         password: '',
+        confirm_password: '',
       },
       activeIndex: '',
       formLabelWidth: '120px',
@@ -130,9 +136,9 @@ export default {
   },
   methods: {
     ...mapActions(['setUserAndState']),
-    ...mapMutations({
-      setUserAuths: 'SET_USER_AUTHS',
-    }),
+    // ...mapMutations({
+    //   setUserAuths: 'SET_USER_AUTHS',
+    // }),
     show(key) {
       this.dialogTableVisible = true
       this.activeIndex = key
@@ -171,24 +177,32 @@ export default {
     },
     async register() {
       this.loading = true
-      await User.registerAccount({
-        nickname: this.form.nickname,
-        password: this.form.password,
-        email: this.form.email,
-      }).finally(() => {
-        this.loading = false
-      })
-      this.form.username = this.form.email
-      this.$message.success('注册成功')
+      try {
+        await User.register({
+          nickname: this.form.nickname,
+          password: this.form.password,
+          username: this.form.username,
+          confirm_password: this.form.confirm_password,
+        }).finally(() => {
+          this.loading = false
+        })
+        // this.form.username = this.form.email
+        this.$message.success('注册成功')
+        await this.login()
+      } catch (error) {
+        this.$notify.error({
+          title: '错误！',
+          message: '😢 注册失败！' + error.data.msg,
+        })
 
-      await this.login()
+        console.log(error.data)
+      }
     },
     async getInformation() {
       try {
         // 尝试获取当前用户信息
         const user = await User.getPermissions()
         this.setUserAndState(user)
-        this.setUserAuths(user.permissions)
       } catch (e) {
         console.log(e)
       }
@@ -199,14 +213,6 @@ export default {
       window.open(
         `${process.env.VUE_APP_BASE_URL}cms/oauth2/signin?provider=${provider}&redirectUrl=${process.env.VUE_APP_CURRENT_URL}`,
       )
-      // var t = window.open(
-      //   `${process.env.VUE_APP_BASE_URL}cms/oauth2/signin?provider=${provider}&redirectUrl=${process.env.VUE_APP_CURRENT_URL}`,
-      //   "_blank",
-      //   "toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=800, height=600"
-      // );
-      // var n = window.setInterval(function() {
-      //   (t && !t.closed) || (window.clearInterval(n), window.location.reload());
-      // }, 300);
     },
   },
 }
@@ -214,12 +220,16 @@ export default {
 
 <style lang="scss" scoped>
 .lin-dialog {
+  z-index: 2005;
   span {
     font-size: 1.3rem;
     font-weight: bold;
   }
   .el-form-item {
     margin-bottom: 0px !important;
+    a {
+      margin-right: 20px;
+    }
   }
   .lin-form-item /deep/ .el-form-item__content {
     margin-bottom: 0px !important;

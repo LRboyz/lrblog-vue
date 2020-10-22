@@ -1,6 +1,6 @@
 <template>
   <div class="hot-wrapper">
-    <el-card shadow="hover">
+    <el-card>
       <div slot="header" class="header">
         <i class="iconfont icon-hotfill" style="margin-right: 5px; color: #ff5722;"></i>
         热门文章
@@ -19,18 +19,36 @@
 </template>
 
 <script>
+import ArticleApi from '@/model/article'
+
 export default {
   name: 'hotArticleList',
-  props: {
-    hotArticleList: {
-      type: Array,
+  data() {
+    return {
+      hotArticleList: [],
+    }
+  },
+  created() {
+    this.gethotArticleList()
+  },
+  methods: {
+    // 获取热门文章列表
+    async gethotArticleList() {
+      const hot_list = await ArticleApi.gethotArticleList()
+      this.hotArticleList = hot_list.data
     },
   },
+  // props: {
+  //   hotArticleList: {
+  //     type: Array,
+  //   },
+  // },
 }
 </script>
 
 <style scoped lang="scss">
 .hot-wrapper {
+  // margin-top: 20px;
   width: 100%;
   .header {
     font-size: 14px;

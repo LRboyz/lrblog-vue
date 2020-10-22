@@ -1,10 +1,10 @@
 <template>
   <div class="detail-wrapper">
-    <i class="des">原创</i>
+    <i class="top-left">原创</i>
     <div class="box-card">
       <el-row :gutter="24">
-        <el-col :xl="24" :lg="24" :md="13" :sm="24" :xs="24">
-          <el-card v-if="detail.title">
+        <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
+          <el-card>
             <div class="detail-head">
               <h1 class="title ml-20 fw-bold">{{ detail.title }}</h1>
               <div class="info mt-20">
@@ -24,10 +24,9 @@
                 </el-breadcrumb>
               </div>
             </div>
-
             <el-divider />
-
             <div class="detail-body">
+              <!-- 内容区域 -->
               <mavonEditor
                 ref="md"
                 :subfield="false"
@@ -37,8 +36,10 @@
                 :ishljs="true"
                 codeStyle="atom-one-dark"
               />
-              <el-tabs value="two">
-                <el-tab-pane label="作者" name="first">
+
+              <!-- 留言区域 -->
+              <!-- <el-tabs value="two"> -->
+              <!-- <el-tab-pane label="作者" name="first">
                   <div class="meta-list">
                     <div class="user-info">
                       <el-avatar :size="50" :src="userinfo.avatar"></el-avatar>
@@ -60,25 +61,16 @@
                       </div>
                     </div>
                   </div>
-                </el-tab-pane>
-                <el-tab-pane label="评论区" name="two">
-                  <!-- 评论区 -->
-                  <comment-list
-                    :post_id="post_id"
-                    :comment_user_id="user.id"
-                    @success="getCommentSuccess"
-                    @updateComment="updateComment"
-                  ></comment-list>
-                </el-tab-pane>
-              </el-tabs>
+                </el-tab-pane> -->
+              <!-- <el-tab-pane label="评论区" name="two"> -->
+              <!-- 评论区 -->
+              <comment-list :detail="detail"></comment-list>
+              <!-- </el-tab-pane>
+              </el-tabs> -->
             </div>
           </el-card>
-          <skeleton-paragraph v-else class="content" :lines="20" line-height="1.2em" />
         </el-col>
       </el-row>
-      <!-- <transition name="module" mode="out-in"> -->
-
-      <!-- </transition> -->
     </div>
     <!-- <Loading v-else /> -->
     <el-backtop class="lin-back-top"></el-backtop>
@@ -90,13 +82,11 @@ import { mapGetters } from 'vuex'
 import { mavonEditor } from 'mavon-editor'
 import CommentList from '@/view/comment/comment-list'
 import ArticleApi from '@/model/article'
-
 // import Loading from '@/component/loading'
 export default {
   name: 'articleDetail',
   components: {
     mavonEditor,
-    // Loading,
     CommentList,
   },
   watch: {
@@ -105,8 +95,8 @@ export default {
       this.getDetail()
     },
   },
-  created() {
-    this.getDetail()
+  async created() {
+    await this.getDetail()
   },
   computed: {
     ...mapGetters(['user']),
@@ -119,6 +109,7 @@ export default {
       detail: {},
       category: [],
       userinfo: {},
+      comment_total: '',
     }
   },
 
@@ -130,15 +121,20 @@ export default {
     updateComment() {
       console.log('update Comment !')
     },
-    // likeChange({ likes_quantity, is_liked }) {
-    //   this.model.likes_quantity += likes_quantity
-    //   this.model.is_liked = is_liked
-    // },
+
     async getDetail() {
       const res = await ArticleApi.getArticleDetail(this.$route.params.id)
       this.detail = res.data
       this.userinfo = res.data.author_info
     },
+    // async likeArticle() {
+    //   if (this.isLikedPage) {
+    //     return false
+    //   }
+    //   const res = await ArticleApi.likeArticle(this.$route.params.id)
+    //   console.log(res)
+    //   console.log('LIke Article!')
+    // },
   },
 }
 </script>
@@ -150,7 +146,7 @@ export default {
   flex-wrap: wrap;
   margin: 0 auto;
   min-height: calc(100vh - 200px);
-  .des {
+  .top-left {
     background: cornflowerblue;
     color: white;
     font-style: normal;
@@ -160,6 +156,7 @@ export default {
     border-radius: 0 0 30px 0;
     left: 0;
     top: 0;
+    z-index: 99;
   }
   .box-card {
     background-size: 20px 20px;
@@ -201,9 +198,6 @@ export default {
             background: #eee;
           }
         }
-      }
-      /deep/ .el-tabs {
-        padding: 20px;
       }
     }
     .content {

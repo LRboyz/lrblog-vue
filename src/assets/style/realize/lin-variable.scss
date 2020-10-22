@@ -22,7 +22,7 @@ $table-border-color: #dee2e6;
 
 /* 菜单 */
 $menuItem-hover: #ffffff;
-$menuItem-bg: #bac7de;
+// $menuItem-bg: #bac7de;
 $submenu-title: #c4c9d2;
 $menuItem-height: 50px;
 
@@ -66,7 +66,7 @@ $font-sizes: (
   l: 24px,
   //20px
     xl: 28px,
-  //28px,,,,,,,,,
+  //28px,,,,,,,,,,,
 );
 
 @each $sizeKey, $size in $font-sizes {

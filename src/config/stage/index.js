@@ -3,16 +3,16 @@ import Utils from '@/lin/util/util'
 
 // eslint-disable-next-line
 let homeRouter = [
-  {
-    title: '首页',
-    type: 'view',
-    name: 'home',
-    route: '/home',
-    filePath: 'view/home/home.vue',
-    inNav: true,
-    icon: 'iconfont icon-appstoreadd',
-    order: 1,
-  },
+  // {
+  //   title: '首页',
+  //   type: 'view',
+  //   name: 'home',
+  //   route: '/home',
+  //   filePath: 'view/home/home.vue',
+  //   inNav: true,
+  //   icon: 'iconfont icon-appstoreadd',
+  //   order: 1,
+  // },
   {
     title: '404',
     type: 'view',

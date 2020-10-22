@@ -384,7 +384,7 @@ thead tr {
         height: 6px;
         border-radius: 50%;
         border: none;
-        background: $theme;
+        // background: $theme;
         position: absolute;
         left: 45px;
         top: 23px;
@@ -430,7 +430,12 @@ thead tr {
     }
   }
 }
-
+.el-menu--horizontal .el-menu-item:not(.is-disabled):hover,
+.el-menu--horizontal .el-menu-item:not(.is-disabled):focus {
+  outline: none;
+  color: $theme;
+  // background: rgb(219, 227, 254);
+}
 .el-menu-vertical-demo {
   padding-top: 10px;
   border-right: 1px solid #1d2a60;
@@ -443,7 +448,9 @@ thead tr {
 .el-menu--vertical /deep/ .icon-erjizhibiao {
   display: none;
 }
-
+.el-menu--horizontal > .el-submenu .el-submenu__title:hover {
+  color: $theme;
+}
 .el-menu--vertical /deep/ .two-folder {
   margin-left: 40px;
 }
@@ -478,7 +485,7 @@ thead tr {
 .el-submenu.is-active.is-opened {
   .el-submenu__title {
     color: $submenu-title !important;
-    background: $menuItem-bg !important;
+    // background: $menuItem-bg !important;
     height: 50px;
 
     &:hover {
@@ -499,7 +506,7 @@ thead tr {
   }
 
   .el-menu--inline {
-    background: $menuItem-bg !important;
+    // background: $menuItem-bg !important;
 
     &:hover {
       background-color: $menuItem-hover !important;
@@ -507,7 +514,7 @@ thead tr {
   }
 
   .el-submenu__title {
-    background: $menuItem-bg !important;
+    // background: $menuItem-bg !important;
 
     &:hover {
       background-color: $menuItem-hover !important;
@@ -515,7 +522,7 @@ thead tr {
   }
 
   .el-menu-item {
-    background: $menuItem-bg !important;
+    // background: $menuItem-bg !important;
 
     &:hover {
       background-color: $menuItem-hover !important;

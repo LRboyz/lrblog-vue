@@ -1,190 +1,157 @@
 <template>
-  <div>
-    <div class="reply-item">
-      <div class="pull-left">
-        <img class="avatar-32" :src="author.avatar || defaultAvatar" alt @click="handleClickAvatar" />
+  <div class="reply-box mt-20">
+    <div v-for="(reply, j) in otherComments" :key="j" class="author-title">
+      <el-avatar class="header-img" :size="40" :src="reply.reply_from.avatar"></el-avatar>
+      <div class="author-info">
+        <span class="author-name">{{ reply.reply_from.nickname }}</span>
       </div>
-      <div class="reply-content-block">
-        <div class="comment-func">
-          <span class="comment-meta inline-block">
-            <a target="_blank" :href="`/user/${author.id}/article`" @click="handleClickAuthor($event)">{{
-              author.nickname
-            }}</a>
-            <template v-if="resp_user_info != null">
-              <span style="margin: 0px 5px;">回复</span>
-              <a target="_blank" :href="`/user/${resp_user_info.id}/article`">{{ resp_user_info.nickname }}</a>
-            </template>
-            <span class="comments-date">· {{ time | filterTimeYmdHms }}</span>
-          </span>
-          <span class="pull-right comment-tools ml15">
-            <a
-              href="javascript:void(0)"
-              class="ml10"
-              data-placement="top"
-              :title="item.title"
-              v-for="item in tools"
-              :key="item.name"
-              @click="handleClickTool($event, item)"
-            >
-              <i :class="item.icon" v-if="item.icon"></i>
-              <span v-if="item.text">{{ item.text }}</span>
-            </a>
-          </span>
+      <div class="talk-box">
+        <div>
+          <span class="fs-sm fw-bold" style="color: #3963bc;">@ </span>
+          <span class="fw-bold">{{ reply.reply_to.nickname }}:</span>
+          <span class="fs-sm ml-10" style="line-height: 20px;">{{ reply.text }}</span>
         </div>
-        <div class="reply-content">
-          <p v-html="commentContent"></p>
+        <!-- @click.prevent="replyLiked(reply, j)" -->
+        <div class="icon-btn fs-xs">
+          <i class="el-icon-s-promotion"></i>
+          <!-- <span v-show="reply.votes > 0">{ reply.votes }} </span> -->
         </div>
+        <div class="desc"></div>
+        <span class="reply fs-sm" @click.prevent="replyItem(reply, j)">回复</span>
+        <div class="desc"></div>
+        <p class="author-time fs-sm ml-10">{{ reply.create_time | formatTime }}</p>
       </div>
-      <div class="comments-ops">
-        <div class="coments-ops-item">
-          <span class="comments-reply-btn ml15" @click="handleAddReply">
-            <i class="iconfont icon-comment coments-ops-icon"></i>
-            {{ replyText }}
-          </span>
-          <el-popconfirm
-            class="comments-reply-btn"
-            title="确认删除此评论"
-            @onConfirm="handleDeleteReply"
-            v-show="user != null && author.id == user.id"
-          >
-            <span class="ml15" slot="reference">
-              <i class="iconfont icon-delete coments-ops-icon"></i>
-              删除
-            </span>
-          </el-popconfirm>
-        </div>
-      </div>
-      <!-- v-show="replyVisible" -->
-      <div class="comment-input">
-        <slot name="reply-item-input"></slot>
+      <div class="reply-box" v-show="reply.visitable">
+        <comment-input @success="sendOtherComments(arguments, reply)" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import defaultAvatar from '@/assets/image/user/user.png'
-import Utils from '@/lin/util/util'
+import CommentInput from './comment-input'
 
 export default {
   name: 'ReplyItem',
+  components: {
+    CommentInput,
+  },
   props: {
-    author: Object,
-    content: String,
-    tools: Array,
-    time: [String, Number],
-    replyVisible: {
-      type: Boolean,
-      default: true,
+    otherComments: {
+      type: Array,
+      // eslint-disable-next-line
+      default: [],
     },
-    reply_user_info: Object,
+  },
+  created() {
+    // console.log(this.otherComments)
   },
   data() {
     return {
-      defaultAvatar,
+      myHeader: 'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
     }
   },
-  created() {
-    console.log(this.replyVisible)
-  },
-  computed: {
-    replyText() {
-      return this.replyVisible === true ? '取消回复' : '回复'
-    },
-    commentContent() {
-      return Utils.formatHtml(Utils.formatHyperLink(this.content))
-    },
-  },
   methods: {
-    handleClickAvatar(event) {
-      event.stopPropagation()
-      this.$emit('clickAvatar', this)
+    replyItem(reply, j) {
+      this.otherComments[j].visitable = !reply.visitable
     },
-    handleClickTool(event, tool) {
-      event.stopPropagation()
-      this.$emit('clickTool', this, tool)
-    },
-    handleClickAuthor(event) {
-      event.stopPropagation()
-      this.$emit('clickAuthor', this)
-    },
-    handleAddReply(event) {
-      event.stopPropagation()
-      this.$emit('addReply', this)
-    },
-    handleDeleteReply() {
-      this.$emit('deleteReply', this)
+    // 子评论的点赞功能暂时放着
+    // replyLiked(item, index) {
+    //   this.$emit('replyLiked', item, index)
+    // },
+    sendOtherComments(other_comment, item) {
+      this.$emit('replyOtherComment', other_comment[0], item)
+      // console.log(other_comment[0], item)
     },
   },
-  filters: {},
 }
 </script>
 
-<style lang="scss" scoped>
-.pull-left {
-  float: left !important;
-}
-.avatar-32 {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-.avatar-32:hover {
-  cursor: pointer;
-}
-.ml10 {
-  margin-left: 10px !important;
-}
-.ml15 {
-  margin-left: 15px !important;
-}
-.pull-left {
-  float: left !important;
-}
-.pull-right {
-  float: right !important;
-}
-.reply-item {
-  padding-bottom: 10px;
-  padding-top: 10px;
-  line-height: 1.6;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.09);
-  word-break: break-word;
-  .reply-content-block {
-    margin-bottom: 10px !important;
-    padding-left: 47px;
-    .reply-content {
-      display: inline-block;
-      margin-top: 0.5rem;
+<style lang="scss" scpoed>
+.author-title {
+  padding: 10px;
+  .top-comment {
+    text-align: left;
+    // margin: 0;
+  }
+  .header-img {
+    display: inline-block;
+    vertical-align: top;
+  }
+  .author-info {
+    text-align: left;
+    display: inline-block;
+    margin-left: 10px;
+    // width: 60%;
+    height: 40px;
+    line-height: 30px;
+    > span {
+      display: block;
+      cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .author-name {
+      color: $theme;
+      // font-size: 18px;
+      font-weight: bold;
     }
   }
-}
-.reply-item a {
-  color: #009a61;
-  text-decoration: none;
-  background: transparent;
-}
-.reply-item a:hover,
-.reply-item a:active,
-.reply-item a:focus {
-  outline: 0;
-}
-.reply-item p {
-  margin-bottom: 5px;
-}
-.comment-meta {
-  color: #999;
-}
-.inline-block {
-  display: inline-block;
-}
-.comments-ops {
-  .coments-ops-item,
-  .comments-reply-btn {
-    &:hover {
-      cursor: pointer;
-      color: #5cb6ff;
+  > span {
+    cursor: pointer;
+  }
+  .iconfont {
+    margin: 0 5px;
+  }
+  .talk-box {
+    margin: 0 50px;
+    .content {
+      font-size: 14px;
+      line-height: 25px;
     }
+    .desc {
+      border-radius: 50%;
+      display: inline-block;
+      width: 3px;
+      margin: 3px 3px;
+      height: 3px;
+      background: #ccc;
+    }
+    .icon-btn {
+      color: rgb(99, 97, 97);
+      margin: 10px 5px 0 -5px;
+      cursor: pointer;
+      display: inline-block;
+      padding: 0 !important ;
+      @media screen and (max-width: 1200px) {
+        width: 20%;
+        padding: 7px;
+      }
+    }
+    .icon-btn:hover {
+      color: $theme;
+    }
+    .author-time {
+      color: rgb(99, 97, 97);
+      display: inline-block;
+    }
+    .reply {
+      padding: 5px;
+      color: rgb(99, 97, 97);
+      // padding: 0 10px;
+      display: inline-block;
+      font-size: 14px;
+    }
+    .reply:hover {
+      cursor: pointer;
+      color: $theme;
+    }
+  }
+  .reply-box {
+    text-align: left;
+    margin: 10px 0 0 50px;
+    background-color: #eaf0f5;
   }
 }
 </style>
