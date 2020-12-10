@@ -11,6 +11,7 @@ class ArticleApi {
     const res = await get('blog/hot/list', params)
     return res
   }
+
   async getArticleDetail(id) {
     // id 是 article_id
     const res = await get(`article/detail/${id}`)
@@ -26,6 +27,16 @@ class ArticleApi {
   }
   async getTagList(params) {
     const res = await get('blog/tag/list', params)
+    return res
+  }
+
+  async getTagInfo(id) {
+    const res = await get(`blog/tag/${id}`)
+    return res
+  }
+
+  async clickTag(id) {
+    const res = await post(`blog/tag/${id}`)
     return res
   }
 

@@ -100,7 +100,6 @@
           <a href="javascript:void(0);" @click="() => signin('Gitee')">
             <el-avatar class="margin-left-xs" icon="iconfont icon-wechat" title="码云登录" size="large"></el-avatar>
           </a>
-          <!-- <el-button type="primary" @click="()=>signin('GitHub')">GitHub</el-button> -->
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -112,7 +111,6 @@
 
 import { mapActions, mapMutations } from 'vuex'
 import User from '@/lin/model/user'
-// import oauth2 from '@/model/oauth2';
 import Utils from '@/lin/util/util'
 
 export default {
@@ -136,12 +134,13 @@ export default {
   },
   methods: {
     ...mapActions(['setUserAndState']),
-    // ...mapMutations({
-    //   setUserAuths: 'SET_USER_AUTHS',
-    // }),
     show(key) {
       this.dialogTableVisible = true
-      this.activeIndex = key
+      if (key) {
+        this.activeIndex = key
+      } else {
+        this.activeIndex = 'login'
+      }
     },
     submitForm() {
       this.$refs.form.validate(valid => {
@@ -208,12 +207,12 @@ export default {
       }
     },
 
-    signin(provider) {
-      window.localStorage.setItem('OAUTH_LOGIN_URL', window.location.href)
-      window.open(
-        `${process.env.VUE_APP_BASE_URL}cms/oauth2/signin?provider=${provider}&redirectUrl=${process.env.VUE_APP_CURRENT_URL}`,
-      )
-    },
+    // signin(provider) {
+    //   window.localStorage.setItem('OAUTH_LOGIN_URL', window.location.href)
+    //   window.open(
+    //     `${process.env.VUE_APP_BASE_URL}cms/oauth2/signin?provider=${provider}&redirectUrl=${process.env.VUE_APP_CURRENT_URL}`,
+    //   )
+    // },
   },
 }
 </script>

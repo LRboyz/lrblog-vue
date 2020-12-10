@@ -9,12 +9,14 @@
             <div class="theme fw-bold">{{ item.tag_name }}</div>
             <div class="desc mt-20 fs-xs">
               <span>{{ item.article_count }}篇文章</span>
-              <span>? 关注</span>
-              <span>? 浏览</span>
+              <!-- <span>? 关注</span> -->
+              <span>{{ item.view_hits }} 浏览</span>
             </div>
-            <el-button class="mt-20">
-              关注
-            </el-button>
+            <router-link :to="{ path: `/tag/${item._id}` }">
+              <el-button class="mt-20" @click="tagClick(item)">
+                查看
+              </el-button>
+            </router-link>
           </el-card>
         </div>
         <skeleton-paragraph v-else class="content" :lines="5" line-height="1.2em" />
@@ -32,6 +34,7 @@ export default {
     return {
       activeName: 'first',
       tagList: [],
+      isActive: true,
     }
   },
   created() {
@@ -46,6 +49,11 @@ export default {
       })
       this.tagList = tag_list.data
       console.log(this.tagList)
+    },
+    async tagClick(tag) {
+      // console.log(tag)
+      const res = await ArticleApi.clickTag(tag._id)
+      console.log(res)
     },
   },
 }

@@ -210,26 +210,15 @@ export default Vue.extend({
   height: 100%;
   top: 0;
   left: 0;
-  // opacity: 0.5;
-  // background: #edf5ff;
-  background-image: url('../assets/image/blog/background.png');
+  opacity: 0.4;
+  // background: rgba(228, 226, 224, 0.675);
+  background-image: url('../assets/image/blog/background.jpg');
   background-size: cover;
   background-repeat: repeat-x;
   background-position: center bottom;
   // background: linear-gradient(to bottom, #0f67b5 0%, #ffffffff 100%);
-  // animation: colorChange 100s ease-in-out infinite;
+  // animation: colorChange 10s ease-in-out infinite;
   // animation-fill-mode: both;
   // mix-blend-mode: overlay;
-}
-@keyframes colorChange {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 </style>

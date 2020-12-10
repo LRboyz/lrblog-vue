@@ -36,6 +36,12 @@ module.exports = {
   },
   devServer: {
     port: 8080,
+    // proxy: {
+    //   '/': {
+    //     target: 'http://0.0.0.0:5000/',
+    //     changeOrigin: true,
+    //   },
+    // },
   },
   // node_modules依赖项es6语法未转换问题
   transpileDependencies: ['vuex-persist'],

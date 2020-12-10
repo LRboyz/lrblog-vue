@@ -30,16 +30,20 @@
 
         <div class="talk-box">
           <div>
-            <span class="content">{{ item.text }}</span>
+            <span class="content" :class="item.status == true ? '' : 'gray-text'">
+              {{ item.status === true ? item.text : '该评论已被管理员删除!' }}</span
+            >
           </div>
-          <div class="icon-btn" @click.prevent="handleLike(item, i)">
-            <i :class="getCommentLiked(item.comment_id) ? 'is_Liked' : ''" class="iconfont icon-zan ml-10"></i>
-            <span class="fs-xs" v-show="item.votes > 0">{{ item.votes }}</span>
+          <div v-if="item.status == true">
+            <div class="icon-btn" @click.prevent="handleLike(item, i)">
+              <i :class="getCommentLiked(item.comment_id) ? 'is_Liked' : ''" class="iconfont icon-zan ml-10"></i>
+              <span class="fs-xs" v-show="item.votes > 0">{{ item.votes }}</span>
+            </div>
+            <div class="desc"></div>
+            <p class="reply" @click.prevent="replyBtn(item, i)">{{ replyText }}</p>
+            <div class="desc"></div>
+            <p class="author-time fs-sm ml-10">{{ item.create_time | formatTime }}</p>
           </div>
-          <div class="desc"></div>
-          <p class="reply" @click.prevent="replyBtn(item, i)">{{ replyText }}</p>
-          <div class="desc"></div>
-          <p class="author-time fs-sm ml-10">{{ item.create_time | formatTime }}</p>
         </div>
         <div class="reply-box" v-show="item.visitable">
           <comment-input @success="sendReplyComment(arguments, item)" />
@@ -51,6 +55,9 @@
         @replyOtherComment="sendOtherComment(arguments, item)"
       ></reply-item>
     </div>
+    <transition name="fade-transform" mode="out-in">
+      <login-register-dialog ref="loginRegister"></login-register-dialog>
+    </transition>
   </div>
 </template>
 
@@ -60,6 +67,7 @@ import { mapGetters } from 'vuex'
 import commentApi from '@/model/comment'
 import ArticleApi from '@/model/article'
 import CommentInput from './comment-input'
+import LoginRegisterDialog from '@/view/account/login-register-dialog'
 import ReplyItem from './reply-item'
 import userLike from '@/model/user-like'
 import { getJSONStorageReader } from '@/lin/util/localStorage'
@@ -71,6 +79,7 @@ export default {
   components: {
     CommentInput,
     ReplyItem,
+    LoginRegisterDialog,
   },
   props: {
     detail: {
@@ -199,21 +208,25 @@ export default {
       return this.comments[i].inputShow
     },
     sendComment(replyComment) {
-      // console.log(replyComment)
-      commentApi
-        .addComment({
-          post_id: this.post_id,
-          text: replyComment,
-        })
-        .then(res => {
-          console.log(res.data)
-          this.$message.success(`${res.msg}`)
-          this.replyComment = ''
-          this.getComments()
-        })
-        .catch(error => {
-          console.warn('评论发布失败', error)
-        })
+      if (this.user) {
+        commentApi
+          .addComment({
+            post_id: this.post_id,
+            text: replyComment,
+          })
+          .then(res => {
+            console.log(res.data)
+            this.$message.success(`${res.msg}`)
+            this.replyComment = ''
+            this.getComments()
+          })
+          .catch(error => {
+            console.warn('评论发布失败', error)
+          })
+      } else {
+        console.log('未登录！！无法操作')
+        this.$refs.loginRegister.show()
+      }
     },
     sendReplyComment(reply_text, item) {
       commentApi
@@ -232,21 +245,25 @@ export default {
         })
     },
     async sendOtherComment(other_comment, item) {
-      // console.log(other_comment[0], item)
-      commentApi
-        .addReplyComment(item.comment_id, {
-          text: other_comment[0],
-          reply_user_id: other_comment[1].reply_from._id,
-        })
-        .then(res => {
-          console.log(res.data)
-          this.$message.success(`${res.msg}`)
-          this.replyComment = ''
-          this.getComments()
-        })
-        .catch(error => {
-          console.warn('回复评论失败', error)
-        })
+      if (this.user) {
+        commentApi
+          .addReplyComment(item.comment_id, {
+            text: other_comment[0],
+            reply_user_id: other_comment[1].reply_from._id,
+          })
+          .then(res => {
+            console.log(res.data)
+            this.$message.success(`${res.msg}`)
+            this.replyComment = ''
+            this.getComments()
+          })
+          .catch(error => {
+            console.warn('回复评论失败', error)
+          })
+      } else {
+        console.log('未登录！！无法操作')
+        this.$refs.loginRegister.show()
+      }
     },
   },
 }
@@ -286,8 +303,7 @@ export default {
     display: flex;
     justify-content: space-evenly;
     img {
-      width: 120px;
-      // height: 150px;
+      width: 120px; // height: 150px;
     }
   }
   @keyframes good {
@@ -303,11 +319,11 @@ export default {
 .author-title:not(:last-child) {
   border-bottom: 1px solid rgba(178, 186, 194, 0.3);
 }
+
 .author-title {
   padding: 10px;
   .top-comment {
-    text-align: left;
-    // margin: 0;
+    text-align: left; // margin: 0;
   }
   .header-img {
     display: inline-block;
@@ -316,8 +332,7 @@ export default {
   .author-info {
     text-align: left;
     display: inline-block;
-    margin-left: 10px;
-    // width: 60%;
+    margin-left: 10px; // width: 60%;
     height: 40px;
     line-height: 30px;
     > span {
@@ -328,8 +343,7 @@ export default {
       text-overflow: ellipsis;
     }
     .author-name {
-      color: $theme;
-      // font-size: 18px;
+      color: $theme; // font-size: 18px;
       font-weight: bold;
     }
   }
@@ -341,6 +355,9 @@ export default {
   }
   .talk-box {
     margin: 0 50px;
+    .gray-text {
+      color: #ccc;
+    }
     .content {
       font-size: 14px;
       line-height: 25px;
@@ -358,7 +375,7 @@ export default {
       margin: 10px 5px 0 -5px;
       cursor: pointer;
       display: inline-block;
-      padding: 0 !important ;
+      padding: 0 !important;
       @media screen and (max-width: 1200px) {
         width: 20%;
         padding: 7px;
@@ -373,8 +390,7 @@ export default {
     }
     .reply {
       padding: 5px;
-      color: rgb(99, 97, 97);
-      // padding: 0 10px;
+      color: rgb(99, 97, 97); // padding: 0 10px;
       display: inline-block;
       font-size: 14px;
     }
@@ -389,9 +405,11 @@ export default {
     background-color: #eaf0f5;
   }
 }
+
 .is_Liked {
   color: $theme;
 }
+
 .is_LikedPage {
   color: orangered;
 }

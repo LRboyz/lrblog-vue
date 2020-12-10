@@ -5,14 +5,21 @@
         <i class="icon el-icon-discount"></i>
         <span class="fw-bold" style="margin-left: 8px;">热门标签</span>
         <span style="flex: 1;"></span>
-        <router-link :to="{ path: '/tag' }" target="_blank">
+        <router-link :to="{ path: '/tag' }">
           <span class="theme">查看更多</span>
           <i class="theme el-icon-caret-right"></i>
         </router-link>
       </div>
       <div v-if="tagList.length > 0" class="tag-list">
-        <el-tag v-for="tag in tagList" v-bind:key="tag.id" :hit="false" effect="light" type="info">
-          <router-link :to="{ path: '/tag/' + `${tag.id}` }" target="_blank">
+        <el-tag
+          v-for="tag in tagList"
+          v-bind:key="tag._id"
+          @click="tagClick(tag)"
+          :hit="false"
+          effect="light"
+          type="info"
+        >
+          <router-link :to="{ path: '/tag/' + `${tag._id}` }" target="_blank">
             <div alt="黑客派" class="tag-image" :style="`background-image: url('${tag.thumbnail}');`"></div>
             {{ tag.tag_name }} ({{ tag.article_count }})
           </router-link>
@@ -45,6 +52,10 @@ export default {
         page: 0,
       })
       this.tagList = tag_list.data
+    },
+    async tagClick(tag) {
+      const res = await ArticleApi.clickTag(tag._id)
+      console.log(res)
     },
   },
 }

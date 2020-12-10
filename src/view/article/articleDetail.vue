@@ -36,33 +36,17 @@
                 :ishljs="true"
                 codeStyle="atom-one-dark"
               />
-
-              <!-- 留言区域 -->
-              <!-- <el-tabs value="two"> -->
-              <!-- <el-tab-pane label="作者" name="first">
-                  <div class="meta-list">
-                    <div class="user-info">
-                      <el-avatar :size="50" :src="userinfo.avatar"></el-avatar>
-                      <div class="ml-20 fw-bold">
-                        <p class="fw-bold">{{ userinfo.nickname }}</p>
-                        <p class="fs-xs mt-20">如有疑问或者希望一起交流学习，请按如下方式联系我:</p>
-                        <div class="flex">
-                          <el-tooltip class="item" effect="dark" content="13549128759" placement="bottom">
-                            <div class="icon"><i class="iconfont icon-wechat" style="color: green;"></i></div>
-                          </el-tooltip>
-                          <div class="icon ml-20"><i class="iconfont icon-github"></i></div>
-                          <el-tooltip class="item" effect="dark" content="603552916" placement="bottom">
-                            <div class="icon ml-20"><i class="iconfont icon-qq" style="color: #3398dc;"></i></div>
-                          </el-tooltip>
-                          <el-tooltip class="item" effect="dark" content="No Allow !" placement="bottom">
-                            <div class="icon ml-20"><i class="iconfont icon-weibo" style="color: #ff0000;"></i></div>
-                          </el-tooltip>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </el-tab-pane> -->
-              <!-- <el-tab-pane label="评论区" name="two"> -->
+              <div class="category mt-20">
+                <p class="theme fw-bold fs-sm">
+                  分类: <el-tag class="ml-10" type="warning">{{ detail.category }} </el-tag>
+                </p>
+              </div>
+              <div class="tag">
+                <p class="theme fw-bold fs-sm">
+                  标签:
+                  <span v-randomColor v-for="tag in detail.tags" :key="tag.id"> {{ tag }} </span>
+                </p>
+              </div>
               <!-- 评论区 -->
               <comment-list :detail="detail"></comment-list>
               <!-- </el-tab-pane>
@@ -112,7 +96,6 @@ export default {
       comment_total: '',
     }
   },
-
   methods: {
     getCommentSuccess(total) {
       console.log(total)
@@ -175,7 +158,26 @@ export default {
     }
     .detail-body {
       margin: 10px;
-      // margin-bottom: 20px;
+      .category {
+        text-align: left;
+        padding: 10px;
+      }
+      .tag {
+        padding: 10px;
+        text-align: left;
+        span {
+          border: 1px solid transparent;
+          border-radius: 20px;
+          padding: 2px 10px;
+          margin-left: 10px;
+          cursor: pointer;
+          background: rgb(248, 248, 250);
+        }
+        span:hover {
+          // font-weight: bold;
+          background: rgb(231, 230, 230);
+        }
+      }
       .meta-list {
         text-align: left;
         .user-info {

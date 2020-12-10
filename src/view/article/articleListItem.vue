@@ -1,34 +1,8 @@
 <template>
   <div class="article-wrapper">
     <div>
-      <!-- <Swiper /> -->
-      <div class="swiper">
-        <el-carousel trigger="click" height="200px">
-          <el-carousel-item>
-            <img
-              src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ce5bd79b739d442ea4d716fcbb301ceb~tplv-k3u1fbpfcp-zoom-1.image"
-              alt=""
-              srcset=""
-            />
-          </el-carousel-item>
-          <el-carousel-item>
-            <img
-              src="https://user-gold-cdn.xitu.io/2020/6/29/172fdc3497423a51?imageView2/1/w/1304/h/734/q/85/format/webp/interlace/1"
-              alt=""
-              srcset=""
-            />
-          </el-carousel-item>
-          <el-carousel-item>
-            <img
-              src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a76eb16fa094d97a5c40d402cc6dd27~tplv-k3u1fbpfcp-watermark.webp"
-              alt=""
-              srcset=""
-            />
-          </el-carousel-item>
-        </el-carousel>
-      </div>
       <skeleton-paragraph v-if="loading" class="content" :lines="20" line-height="1.2em" />
-      <div class="mt-20" v-else>
+      <div v-else>
         <div class="article-item" v-for="articleItem in articleList" :key="articleItem.id + articleItem.title">
           <el-card style="margin-bottom: 10px;">
             <h3 slot="header" class="title">
@@ -83,7 +57,6 @@
 </template>
 
 <script>
-// import Swiper from '@/view/article/swiper'
 import { getJSONStorageReader } from '@/lin/util/localStorage'
 
 const localLikesHistory = getJSONStorageReader('user_like_history')
@@ -136,32 +109,8 @@ export default {
   opacity: 0;
 }
 .article-wrapper {
-  .swiper {
-    width: 100%;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-    .el-carousel__item {
-      color: #475669;
-      font-size: 14px;
-      // opacity: 0.75;
-      line-height: 200px;
-      margin: 0;
-    }
-
-    .el-carousel__item:nth-child(2n) {
-      background-color: #99a9bf;
-    }
-
-    .el-carousel__item:nth-child(2n + 1) {
-      background-color: #d3dce6;
-    }
-  }
-  // margin: 0 20px 50px 20px;
   margin-bottom: 50px;
   .article-item {
-    // margin: 0px 20px 20px 20px;
     text-align: left;
     .title {
       transition: margin 0.25s;

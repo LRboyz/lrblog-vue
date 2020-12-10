@@ -25,18 +25,6 @@
           <p class="number">{{ user.tag_count }}</p>
         </div>
       </div>
-      <div class="contact flex">
-        <el-tooltip class="item" effect="dark" content="13549128759" placement="bottom">
-          <div class="icon"><i class="iconfont icon-wechat" style="color: green;"></i></div>
-        </el-tooltip>
-        <div class="icon ml-20"><i class="iconfont icon-github"></i></div>
-        <el-tooltip class="item" effect="dark" content="603552916" placement="bottom">
-          <div class="icon ml-20"><i class="iconfont icon-qq" style="color: #3398dc;"></i></div>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="LRboyzZ" placement="bottom">
-          <div class="icon ml-20"><i class="iconfont icon-weibo" style="color: #ff0000;"></i></div>
-        </el-tooltip>
-      </div>
     </div>
   </div>
 </template>
@@ -102,27 +90,6 @@ export default {
       font-size: 20px;
       font-weight: bold;
       margin-top: 20px;
-    }
-  }
-  .contact {
-    margin: 20px;
-    justify-content: center;
-    .icon {
-      cursor: pointer;
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: #fff;
-      border: 1px solid #eee;
-    }
-    .icon:hover {
-      transition: 0.5s;
-      transform: rotate(360deg);
-      background: #eee;
     }
   }
 }

@@ -7,9 +7,8 @@ export default {
   sideBarLevel: AppConfig.sideBarLevel || 3,
   defaultRoute: AppConfig.defaultRoute || '/about',
   // 文章列表
-  articleList: [],
-  // 分类列表
-  categoryList: [],
+  // articleList: [],
+
   // 推送消息
   readedMessages: [],
   unreadMessages: [],

@@ -1,13 +1,42 @@
 <template>
   <div class="wrapper">
     <el-row class="row-bg" :gutter="24">
-      <el-col :xs="22" :md="3" :lg="3">
-        <div class="nav"><Navbar /></div>
+      <el-col :xs="24" :md="3" :lg="3">
+        <div><Navbar /></div>
       </el-col>
       <el-col :xs="22" :md="14" :lg="14">
         <div class="main-content">
+          <div v-show="$route.path == '/index'" class="swiper">
+            <el-carousel trigger="click" height="200px">
+              <el-carousel-item>
+                <img
+                  src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ce5bd79b739d442ea4d716fcbb301ceb~tplv-k3u1fbpfcp-zoom-1.image"
+                  alt=""
+                  srcset=""
+                />
+              </el-carousel-item>
+              <!-- <el-carousel-item>
+                <img
+                  src="https://user-gold-cdn.xitu.io/2020/6/29/172fdc3497423a51?imageView2/1/w/1304/h/734/q/85/format/webp/interlace/1"
+                  alt=""
+                  srcset=""
+                />
+              </el-carousel-item>
+              <el-carousel-item>
+                <img
+                  src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a76eb16fa094d97a5c40d402cc6dd27~tplv-k3u1fbpfcp-watermark.webp"
+                  alt=""
+                  srcset=""
+                />
+              </el-carousel-item> -->
+            </el-carousel>
+          </div>
           <transition name="fade">
-            <router-view :isFetching="loading" :articleList="articleList"></router-view>
+            <router-view v-if="articleList.length > 0 && !loading" :isFetching="loading" :articleList="articleList">
+            </router-view>
+            <div class="fs-sm" v-if="!loading && articleList.length == 0" style="color: #777777;">
+              <img src="../../assets/image/blog/nofound.png" alt="暂无文章" srcset="" />
+            </div>
           </transition>
           <!-- <Loading v-else /> -->
           <!--  加载更多 -->
@@ -45,9 +74,10 @@
 /* eslint-disable */
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 import Navbar from '@/component/layout/navbar'
 import ArticleApi from '@/model/article'
+import ArticleListItem from '@/view/article/articleListItem'
 import HotArticleList from '@/view/article/hotArticleList'
 import TagList from '@/view/tag/tagList'
 import UserCard from '@/view/user/index'
@@ -60,10 +90,10 @@ export default {
     TagList,
     UserCard,
     Community,
+    ArticleListItem,
   },
   data() {
     return {
-      // drawer: false,
       pagination: {
         currentPage: 0,
         pageSize: 10,
@@ -71,14 +101,12 @@ export default {
         category_name: null,
         tag_name: null,
       },
+      articleList: [],
       value: new Date(),
       aside: 0,
       scroll: 0,
       loading: false,
       isCanLoadMore: true,
-      articleList: [],
-      // hotArticleList: [],
-      // tagList: [],
     }
   },
   watch: {
@@ -89,11 +117,6 @@ export default {
       this.refresh()
     },
   },
-  mounted() {
-    // this.$nextTick(function () {
-    //   window.addEventListener('scroll', this.dataScroll, true)
-    // })
-  },
   computed: {
     category_name() {
       return this.$route.params.category_name
@@ -101,17 +124,16 @@ export default {
   },
   created() {
     this.refresh()
-    // console.log(this.$route.path)
+    console.log(this.articleList)
   },
   methods: {
     async refresh() {
       this.pagination.currentPage = 0
-      // this.any = new Date()
       await this.initData()
     },
 
     // 获取文章列表
-    async getArticleList(params) {
+    async getArticleList(params, keyword) {
       this.loading = true
       const isRestart = !params.currentPage || params.currentPage == 0
       const isLoadMore = params.currentPage && params.currentPage > 0
@@ -119,8 +141,10 @@ export default {
         count: params.pageSize,
         page: params.currentPage,
         category_name: this.category_name,
+        keyword,
       })
       this.loading = false
+      // console.log(this.$route)
       if (isLoadMore) {
         // console.log('加载更多...')
         this.articleList = this.articleList.concat([...res.data])
@@ -130,50 +154,35 @@ export default {
         if (this.articleList.length == this.pagination.pageTotal) {
           this.isCanLoadMore = false
         }
-        console.log(this.articleList)
       } else {
         // console.log('不是加载更多了')
         this.articleList = res.data
         // console.log(this.articleList)
-        // this.set_article_list(this.articleList)
       }
     },
     // 初始化数据
     async initData() {
-      // await this.getCategory()
-      // if (this.articleList.length == 0 && this.$route.name == 'articleList') {
-      await this.getArticleList(this.pagination)
-      // }
+      await this.getArticleList(this.pagination, this.$route.query.keyword)
     },
-    // dataScroll: function () {
-    //   try {
-    //     this.scroll = document.documentElement.scrollTop || document.body.scrollTop
-    //     // console.log(this.scroll)
-    //     this.aside =
-    //       document.documentElement.scrollTop || document.body.scrollTop || document.querySelector('.is_fixed').scrollTop
-    //     // console.log(this.aside)
-    //   } catch (ex) {
-    //     console.error(ex)
-    //   }
-    // },
     // 加载更多
     loadmoreArticle() {
       console.log('demo')
       this.pagination.currentPage += 1
       this.getArticleList(this.pagination)
     },
-    ...mapMutations({
-      set_article_list: 'SET_ARTICLE_LIST',
-    }),
   },
 }
 </script>
 
 <style scoped lang="scss">
 .wrapper {
+  overflow: hidden;
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s;
+  }
+  .nav {
+    // position: fixed;
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
@@ -181,6 +190,29 @@ export default {
   .main-content {
     margin-bottom: 20px;
     flex: 1;
+    .swiper {
+      margin-bottom: 20px;
+      width: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .el-carousel__item {
+        color: #475669;
+        font-size: 14px;
+        // opacity: 0.75;
+        line-height: 200px;
+        margin: 0;
+      }
+
+      .el-carousel__item:nth-child(2n) {
+        background-color: #99a9bf;
+      }
+
+      .el-carousel__item:nth-child(2n + 1) {
+        background-color: #d3dce6;
+      }
+    }
     .handan-btn {
       border: 1px solid rgba(152, 134, 250, 0.639);
       padding: 5px 20px;
@@ -213,8 +245,8 @@ export default {
       height: 0;
       top: 50%;
       left: 50%;
-      background: rgba(152, 134, 250, 0.639);
-      opacity: 0;
+      background: rgba(69, 95, 242, 0.639);
+
       -webkit-transform: translateX(-50%) translateY(-50%) rotate(60deg);
       -ms-transform: translateX(-50%) translateY(-50%) rotate(60deg);
       -o-transform: translateX(-50%) translateY(-50%) rotate(60deg);

@@ -27,38 +27,26 @@
 
             <el-menu-item class="menu-item block" style="margin-right: 50px; width: 300px;">
               <el-input
+                v-model="keyword"
                 class="ml-20"
                 placeholder="请输入文章关键词..."
-                prefix-icon="el-icon-search"
                 style="height: 40px; margin-top: 10px;"
-              ></el-input>
+              >
+                <i slot="prefix" class="el-input__icon el-icon-search" @click="Search"></i>
+              </el-input>
             </el-menu-item>
 
             <el-menu-item class="menu-item block" index="index">
               <router-link :to="{ path: '/index' }">
-                <i class="iconfont icon-home"></i>
+                <!-- <i class="iconfont icon-home"></i> -->
                 <span class="ml-10">首页</span>
               </router-link>
             </el-menu-item>
 
-            <!-- <el-menu-item class="menu-item block" index="time">
-              <router-link :to="{ path: '/time' }">
-                <i class="el-icon-camera"></i>
-                时间轴
-              </router-link>
-            </el-menu-item> -->
-
-            <!-- <el-menu-item class="menu-item block" index="project">
-              <router-link :to="{ path: '/tag' }">
-                <i class="el-icon-price-tag" style="transform: rotate(-50deg); margin-top: -5px;"></i>
-                <span class="fw-bold">标签</span>
-              </router-link>
-            </el-menu-item> -->
-
             <el-menu-item class="menu-item block" index="about">
               <router-link :to="{ path: '/about' }">
-                <i class="el-icon-user" style="margin-top: -5px;"></i>
-                关于
+                <!-- <i class="el-icon-user" style="margin-top: -5px;"></i> -->
+                关于博主
               </router-link>
             </el-menu-item>
 
@@ -86,24 +74,51 @@
         :xl="{ span: 24, offset: 5 }"
       >
         <transition name="fade-transform" mode="out-in">
-          <router-view></router-view>
+          <router-view :articleList="articleList"></router-view>
         </transition>
       </el-col>
       <!-- <el-backtop class="lin-back-top"></el-backtop> -->
     </div>
     <div class="footerWrapper">
-      <el-footer class="foot-content">
-        <p class="copyright fs-sm">Copyright © LRBlog - blog.lrboy.live</p>
-        <p class="beian fs-sm">粤ICP备19090103号-1</p>
-      </el-footer>
+      <div class="foot-content flex">
+        <div class="copyright">
+          <h2 class="logo-title"><span>LR</span>Blog</h2>
+          <p class="mt-10 beian fs-sm">粤ICP备19090103号-1</p>
+          <p class="fs-sm">Copyright © LRBlog - blog.lrboy.live</p>
+        </div>
+        <div class="center">
+          <div class="fw-bold">技术栈</div>
+          <p>Vue</p>
+          <p>Flask</p>
+          <p>MongoDB</p>
+        </div>
+        <div class="foot-right">
+          <p class="fw-bold">联系我</p>
+          <div class="mt-20 contact flex">
+            <el-tooltip class="item" effect="dark" content="13549128759" placement="bottom">
+              <div class="icon"><i class="iconfont icon-wechat" style="color: green;"></i></div>
+            </el-tooltip>
+            <div class="icon ml-20"><i class="iconfont icon-github"></i></div>
+            <el-tooltip class="item" effect="dark" content="603552916" placement="bottom">
+              <div class="icon ml-20"><i class="iconfont icon-qq" style="color: #3398dc;"></i></div>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="LRboyzZ" placement="bottom">
+              <div class="icon ml-20"><i class="iconfont icon-weibo" style="color: #ff0000;"></i></div>
+            </el-tooltip>
+          </div>
+        </div>
+      </div>
     </div>
-    <login-register-dialog ref="loginRegister"></login-register-dialog>
+    <transition name="fade-transform" mode="out-in">
+      <login-register-dialog ref="loginRegister"></login-register-dialog>
+    </transition>
   </div>
   <!-- </div> -->
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+// import ArticleApi from '@/model/article'
 import Navbar from '@/component/layout/navbar'
 import CurrentUser from '@/component/layout/user'
 import { mixinDevice } from '@/lin/util/mixin'
@@ -118,13 +133,14 @@ export default {
       activeIndex: '',
       drawer: false,
       categoryList: [],
+      keyword: '',
+      articleList: [],
     }
   },
   computed: {
     logined() {
       return this.$store.state.logined
     },
-
     ...mapGetters(['user']),
   },
   watch: {
@@ -134,10 +150,10 @@ export default {
   },
   created() {
     this.activeIndex = this.$route.path
+    console.log(this.articleList)
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
+    handleSelect(key) {
       if (key === 'login' || key === 'register') {
         this.activeIndex = key
         this.$refs.loginRegister.show(key)
@@ -152,6 +168,12 @@ export default {
     // eslint-disable-next-line
     flushCom: function() {
       this.$router.go(0)
+    },
+    async Search() {
+      this.$router.push({
+        path: '/',
+        query: { keyword: this.keyword },
+      })
     },
   },
 }
@@ -174,6 +196,7 @@ export default {
   }
 }
 .wrapper {
+  overflow-x: hidden;
   // width: 100%;
   .drawer {
     background: rgb(186, 204, 244);
@@ -186,11 +209,11 @@ export default {
       padding: 5px;
     }
   }
-  overflow-x: hidden;
+  // overflow-x: hidden;
   display: flex;
   flex-direction: column;
   .headerWrapper {
-    background: rgba($color: #ffffff, $alpha: 0.8);
+    background: rgba($color: #ffffff, $alpha: 0.6);
     position: fixed;
     width: 100%;
     left: 0;
@@ -221,6 +244,10 @@ export default {
         a:hover {
           color: #3963bc;
         }
+      }
+      .el-icon-search:hover {
+        color: $theme;
+        font-weight: bold;
       }
       /deep/ .el-menu-item:hover {
         color: $theme;
@@ -260,15 +287,54 @@ export default {
     }
   }
   .footerWrapper {
+    border-top: 1px solid #ebebeb;
     width: 100%;
-    padding: 1rem 0;
-    background: #fff;
-    // background: rgba($color: #ffffff, $alpha: 0.8);
+    padding: 2rem 0;
+    // background: rgba($color: #ffffff, $alpha: 0.6);
+    background: rgba($color: #ffffff, $alpha: 1);
     .foot-content {
+      flex-wrap: wrap;
       width: 100%;
+      max-width: 1100px;
       margin: 0 auto;
       line-height: 30px;
-      text-align: center;
+      text-align: left;
+      padding: 0 20px;
+      .copyright {
+        color: #777777;
+      }
+      .center {
+        margin-right: 20%;
+        flex: 1;
+        text-align: right;
+        p {
+          color: #777777;
+          font-size: 12px;
+        }
+      }
+      .foot-right {
+        margin-right: 20px;
+      }
+      .contact {
+        justify-content: center;
+        .icon {
+          cursor: pointer;
+          // margin-top: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-color: rgb(245, 245, 245);
+          border: 1px solid #eee;
+        }
+        .icon:hover {
+          transition: 0.5s;
+          transform: rotate(360deg);
+          background: #eee;
+        }
+      }
     }
   }
 }
